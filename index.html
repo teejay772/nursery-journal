@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nursery Activity Journal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nursery Log">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f4f3f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131220" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: an iPad app. Sidebar of coloured icon tiles in landscape, a bottom tab bar
+   when narrow. Soft white cards on a lilac-grey page; rounded display type; faces and stars
+   for the two scores. Colour lives in the small icon tiles, the page itself stays calm. */
+:root{
+  --bg:#f4f3f9; --surface:#ffffff; --surface-2:#eceaf4; --ink:#1c1a2b; --ink-2:#4a4760; --muted:#6b6882;
+  --line:#e3e0ee; --accent:#5b4fd6; --accent-ink:#ffffff; --accent-soft:#e9e6fb; --note:#fff1c2; --note-ink:#4a3a00;
+  --low:#c6402f;
+  --sun:#f29d0a; --sky:#2f8fe6; --berry:#e2559a; --leaf:#22a86b; --grape:#7a5cf0; --coral:#ec6a45; --teal:#12a3a3;
+  --a-CL:#2a78d6; --a-PD:#eb6834; --a-PSED:#1baf7a; --a-L:#eda100; --a-M:#e87ba4; --a-UW:#008300; --a-EAD:#6250d6;
+  --shadow:0 1px 2px rgba(28,20,70,.05),0 8px 24px rgba(28,20,70,.06);
+  --display:ui-rounded,"SF Pro Rounded","Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --r:22px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131220; --surface:#1e1c30; --surface-2:#2a2842; --ink:#f2f1f9; --ink-2:#c8c5dc; --muted:#9c99b6;
+    --line:#37344f; --accent:#a299ff; --accent-ink:#151329; --accent-soft:#2d2a52; --note:#473c10; --note-ink:#fbeeb8;
+    --low:#ff8f7d;
+    --a-CL:#3987e5; --a-PD:#d95926; --a-PSED:#199e70; --a-L:#c98500; --a-M:#d55181; --a-UW:#0ca30c; --a-EAD:#9085e9;
+    --shadow:0 0 0 1px #37344f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131220; --surface:#1e1c30; --surface-2:#2a2842; --ink:#f2f1f9; --ink-2:#c8c5dc; --muted:#9c99b6;
+  --line:#37344f; --accent:#a299ff; --accent-ink:#151329; --accent-soft:#2d2a52; --note:#473c10; --note-ink:#fbeeb8;
+  --low:#ff8f7d;
+  --a-CL:#3987e5; --a-PD:#d95926; --a-PSED:#199e70; --a-L:#c98500; --a-M:#d55181; --a-UW:#0ca30c; --a-EAD:#9085e9;
+  --shadow:0 0 0 1px #37344f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:var(--display);font-weight:800;text-wrap:balance;margin:0;line-height:1.15;letter-spacing:-.01em}
+h1{font-size:1.15rem} h2{font-size:1.45rem} h3{font-size:1.1rem}
+h2.page{font-size:clamp(1.7rem,4vw,2.2rem)}
+p{margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ic{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic .f{fill:currentColor;stroke:none}
+.ic text{fill:currentColor;stroke:none;font-family:var(--display);font-weight:800}
+
+/* App frame */
+.app{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh;min-height:100dvh}
+.side{position:sticky;top:0;align-self:start;height:100vh;height:100dvh;padding:22px 16px;display:flex;flex-direction:column;gap:18px;background:var(--surface);border-right:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;padding:0 6px}
+.mascot{width:46px;height:46px;flex:none}
+.side nav{display:flex;flex-direction:column;gap:4px}
+.navi{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:14px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;min-height:48px}
+.navi:hover{background:var(--surface-2)}
+.navi[aria-current="page"]{background:var(--accent-soft)}
+.tile{width:34px;height:34px;border-radius:11px;background:var(--c,var(--accent));color:#fff;display:grid;place-items:center;flex:none}
+.tile .ic{width:20px;height:20px}
+.tile.lg{width:46px;height:46px;border-radius:15px}.tile.lg .ic{width:26px;height:26px}
+.side .spacer{flex:1}
+.fine{font-size:.8rem;color:var(--muted);line-height:1.35}
+.content{min-width:0}
+.topbar{display:none}
+main{max-width:980px;margin:0 auto;padding:28px 24px 40px;display:flex;flex-direction:column;gap:22px}
+.foot{max-width:980px;margin:0 auto;padding:0 24px 32px}
+.tabbar{display:none}
+@media (max-width:899px){
+  .app{display:block}
+  .side{display:none}
+  .topbar{display:flex;align-items:center;gap:10px;padding:12px 16px 4px}
+  .topbar .mascot{width:36px;height:36px}
+  .topbar .title{font-family:var(--display);font-weight:800;font-size:1.05rem;margin-right:auto}
+  main{padding:14px 16px 24px}
+  .foot{padding:0 16px 110px}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:5;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line)}
+  .tabbar .navi{flex-direction:column;gap:3px;padding:4px 2px;font-size:.72rem;min-height:54px;justify-content:center;text-align:center;color:var(--muted)}
+  .tabbar .navi[aria-current="page"]{background:transparent;color:var(--ink)}
+  .tabbar .navi .tile{width:30px;height:30px;border-radius:10px;opacity:.55}
+  .tabbar .navi[aria-current="page"] .tile{opacity:1}
+}
+
+/* Controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;background:var(--surface-2);color:var(--ink);border-radius:999px;padding:0 18px;min-height:44px;cursor:pointer;font-family:var(--display);font-weight:700;text-decoration:none}
+.btn:hover{filter:brightness(.97)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.big{min-height:54px;padding:0 24px;font-size:1.08rem}
+.btn.small{min-height:38px;padding:0 14px;font-size:.92rem}
+.btn.quiet{background:transparent;color:var(--accent)}
+.iconbtn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:0;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.iconbtn:active{transform:scale(.94)}
+.iconbtn.sm{width:38px;height:38px}
+.iconbtn.ghost{background:transparent;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row.spread{justify-content:space-between}
+.row.tight{gap:6px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card.flat{background:transparent;box-shadow:none;border:2px dashed var(--line);align-items:center;text-align:center;padding:26px 18px}
+.card.flat .mascot{width:64px;height:64px}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.note{background:var(--note);color:var(--note-ink);border-radius:18px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.note .btn{background:color-mix(in srgb,currentColor 14%,transparent);color:inherit}
+.note.info{background:var(--accent-soft);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 11px 4px 5px;font-size:.84rem;color:var(--ink-2);background:var(--surface-2);min-height:28px}
+.chip .dot{width:20px;height:20px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;flex:none}
+.chip .dot .ic{width:13px;height:13px;stroke-width:2.4}
+.chip.plain{padding-left:11px}
+.chip.hard{background:transparent;box-shadow:inset 0 0 0 1.5px var(--low)}
+button.chip{border:0;cursor:pointer;min-height:38px;padding:4px 14px 4px 8px;font-size:.9rem}
+button.chip.plain{padding-left:14px}
+button.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.scrollx{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.scrollx::-webkit-scrollbar{display:none}
+.scrollx>*{flex:none}
+.stars{display:inline-flex;gap:1px;vertical-align:middle;color:var(--line)}
+.stars .ic{width:17px;height:17px;stroke:none;fill:currentColor}
+.stars .on{color:var(--sun)}
+.face{width:26px;height:26px;flex:none}
+.face .fbg{fill:var(--fc)} .face .fe{fill:#3b2a00} .face .fm{fill:none;stroke:#3b2a00;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round} .face .fm.fill{fill:#3b2a00}
+.f1{--fc:#c9cfe4}.f2{--fc:#e1dcc8}.f3{--fc:#f6e29c}.f4{--fc:#f9d05c}.f5{--fc:#f7b90f}
+.score{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;color:var(--ink-2)}
+.score strong{color:var(--ink);font-family:var(--display)}
+.grid{display:grid;gap:14px}
+.grid.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr))}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stat{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;align-items:center;gap:12px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .l{color:var(--muted);font-size:.84rem;line-height:1.25}
+.hero{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.hero-t{display:flex;align-items:center;gap:14px}
+.hero .mascot{width:64px;height:64px}
+.eyebrow{font-family:var(--display);font-weight:700;color:var(--accent)}
+.daynav{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+input[type=date]{min-height:44px;padding:0 14px;border:0;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);font-family:var(--display);font-weight:700}
+.week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.day{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:8px;min-height:170px}
+.day.today{box-shadow:0 0 0 2.5px var(--accent)}
+.day h3{font-size:.98rem;display:flex;justify-content:space-between;align-items:center}
+.day h3 small{font-family:var(--body);font-weight:400;color:var(--muted)}
+.planitem{border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.planitem.done{opacity:.6}
+.planitem strong{font-family:var(--display);line-height:1.2}
+@media (max-width:1100px){.week{grid-template-columns:1fr}.day{min-height:0}}
+.bars{display:flex;flex-direction:column;gap:12px}
+.barrow{display:grid;grid-template-columns:1fr max-content;gap:5px 12px;align-items:center}
+.bars .lab{font-size:.92rem;color:var(--ink-2);min-width:0;display:flex;align-items:center;gap:8px}
+.bars .track{grid-column:1/-1;height:12px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.bars .fill{display:block;height:12px;border-radius:0 6px 6px 0;min-width:3px;background:var(--accent)}
+.bars .val{font-variant-numeric:tabular-nums;font-family:var(--display);font-weight:700}
+details>summary{cursor:pointer;font-family:var(--display);font-weight:700;color:var(--accent);min-height:36px;display:flex;align-items:center}
+details[open]>summary{margin-bottom:6px}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px}
+ol.steps li::marker{font-family:var(--display);font-weight:800;color:var(--accent)}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 12px;font-size:.94rem;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.why{background:var(--bg);border-radius:14px;padding:10px 12px;color:var(--ink-2);font-size:.92rem;display:flex;gap:8px;align-items:flex-start}
+.why .ic{color:var(--accent);margin-top:2px}
+.cardhead{display:flex;gap:12px;align-items:center}
+.cardhead h3{flex:1;min-width:0}
+.field{display:flex;flex-direction:column;gap:5px;font-size:.86rem;color:var(--muted)}
+.field input,.field select,.field textarea,select.pill{min-height:46px;padding:10px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font-size:1rem;width:100%}
+select.pill{width:auto;border-radius:999px;font-family:var(--display);font-weight:700}
+.field textarea{min-height:84px;resize:vertical}
+.search{position:relative;flex:1;min-width:200px}
+.search .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search input{width:100%;min-height:46px;border:0;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);padding:0 16px 0 42px;font-size:1rem}
+table{border-collapse:collapse;width:100%;font-size:.94rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--muted);font-weight:400;font-size:.84rem}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.spark{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border-radius:var(--r);box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:12px}
+.spark p.big{font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.3}
+
+/* Flashcards */
+.flash{perspective:1400px;min-width:0;display:grid}
+.flash-inner{display:grid;transform-style:preserve-3d;min-width:0}
+.flash.flipped .flash-inner{transform:rotateY(180deg)}
+.flash-face{grid-area:1/1;min-width:0;display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:var(--r);box-shadow:var(--shadow);border-top:9px solid var(--c);background:var(--surface);background:color-mix(in srgb,var(--c) 15%,var(--surface));-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.flash-back{transform:rotateY(180deg)}
+.flash .why,.flash .chip,.flash .btn:not(.primary){background:var(--surface);background:color-mix(in srgb,var(--surface) 78%,transparent)}
+.flash .push{margin-top:auto}
+.flash .ideatext{font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.3}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px 12px}
+.fact{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;line-height:1.3;color:var(--ink-2);min-width:0}
+.fact .ic{margin-top:1px;color:var(--ink)}
+.fact b{display:block;font-family:var(--display);color:var(--ink)}
+.fact.wide{grid-column:1/-1}
+.formrow{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+@media (max-width:560px){.formrow{grid-template-columns:1fr}}
+
+/* Sheets */
+dialog{border:0;border-radius:28px;background:var(--surface);color:var(--ink);padding:0;width:min(660px,calc(100vw - 24px));max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);box-shadow:0 24px 80px rgba(10,8,40,.35)}
+dialog::backdrop{background:rgba(16,12,44,.45)}
+dialog form{display:flex;flex-direction:column;gap:16px;padding:24px}
+@media (max-width:640px){dialog{margin:auto auto 0;width:100%;max-width:100%;border-radius:28px 28px 0 0}dialog form{padding:20px 18px calc(22px + env(safe-area-inset-bottom))}}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+legend{padding:0;font-size:.86rem;color:var(--muted);margin-bottom:8px}
+.rate input,.checks input{position:absolute;opacity:0;pointer-events:none}
+.stars-in{display:flex;gap:6px}
+.stars-in label{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:var(--surface-2);color:var(--line);cursor:pointer}
+.stars-in label .ic{width:30px;height:30px;stroke:none;fill:currentColor}
+.stars-in label.on{color:var(--sun);background:var(--note)}
+.faces-in{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.faces-in label{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border-radius:16px;background:var(--surface-2);cursor:pointer;text-align:center;font-size:.72rem;line-height:1.2;color:var(--ink-2)}
+.faces-in .face{width:36px;height:36px}
+.faces-in input:checked+label{background:var(--accent-soft);box-shadow:inset 0 0 0 2.5px var(--accent);color:var(--ink)}
+.rate input:focus-visible+label,.checks input:focus-visible+label{outline:3px solid var(--accent);outline-offset:2px}
+.hint{font-family:var(--display);font-weight:700;color:var(--ink-2)}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks label{border-radius:999px;padding:4px 14px;min-height:40px;cursor:pointer;font-size:.92rem;display:inline-flex;gap:7px;align-items:center;background:var(--surface-2);color:var(--ink-2)}
+.checks label i{width:10px;height:10px;border-radius:50%;flex:none}
+.checks input:checked+label{background:var(--accent);color:var(--accent-ink)}
+textarea.backup{width:100%;min-height:110px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;padding:10px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:700;padding:10px 18px;border-radius:999px;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;z-index:20}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast .ic{color:var(--sun);stroke:none;fill:currentColor}
+@media (prefers-reduced-motion: no-preference){
+  .btn,.iconbtn,.navi,.chip{transition:transform .12s,background .15s,filter .15s}
+  .flash-inner{transition:transform .55s cubic-bezier(.3,.8,.3,1)}
+  #toast{transition:opacity .2s,transform .25s cubic-bezier(.2,.9,.3,1.3)}
+  .mascot .leafs{transform-origin:32px 20px;animation:sway 4s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span data-mascot></span><h1>Nursery Activity Journal</h1></div>
+    <nav id="side-nav" aria-label="Sections"></nav>
+    <div class="spacer"></div>
+    <button class="btn" data-act="backup" id="btn-backup"><span data-ic="share"></span>Back up or restore</button>
+    <p class="fine">Entries stay on this device. Use initials or group names, not children's full names.</p>
+  </aside>
+  <div class="content">
+    <header class="topbar">
+      <span data-mascot></span><span class="title">Nursery Activity Journal</span>
+      <button class="iconbtn" data-act="backup" id="btn-backup-m" aria-label="Back up or restore"><span data-ic="share"></span></button>
+    </header>
+    <main id="view"></main>
+    <p class="fine foot">Entries are saved on this device only and are not uploaded anywhere. Use initials or group names, not children's full names, and back up regularly.</p>
+  </div>
+  <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dlg-log"><form method="dialog" id="form-log"></form></dialog>
+<dialog id="dlg-plan"><form method="dialog" id="form-plan"></form></dialog>
+<dialog id="dlg-act"><form method="dialog" id="form-act"></form></dialog>
+<dialog id="dlg-backup"><form method="dialog" id="form-backup"></form></dialog>
+<dialog id="dlg-confirm"><form method="dialog" id="form-confirm"></form></dialog>
+
+<script>
+"use strict";
+/* ---------- Reference data ---------- */
+var AREAS = [
+  {id:"CL",   name:"Communication and Language", prime:true},
+  {id:"PD",   name:"Physical Development", prime:true},
+  {id:"PSED", name:"Personal, Social and Emotional Development", prime:true},
+  {id:"L",    name:"Literacy"},
+  {id:"M",    name:"Mathematics"},
+  {id:"UW",   name:"Understanding the World"},
+  {id:"EAD",  name:"Expressive Arts and Design"}
+];
+var KINDS = {stories:"Stories and talk", building:"Building and making", games:"Games with rules",
+  movement:"Movement and music", pretend:"Pretend play", exploring:"Exploring materials", outdoors:"Outdoors and nature", other:"Other"};
+var AGES = {u2:"Under 2", "2-3":"2 to 3", "3-4":"3 to 4", "4-5":"4 to 5"};
+var LEVEL = ["","Extremely low","Low","Moderate","High","Extremely high"];
+var INV_HINT = ["","Hardly any activity","Often interrupted","Busy, but routine","Engaged, with intense moments","Absorbed throughout"];
+var WB_HINT = ["","Clear distress","Uneasy","Neutral","Content","Relaxed, lively, confident"];
+var TAGS = [
+  {id:"asked-again", label:"Asked to do it again"},
+  {id:"lots-talk", label:"Lots of talk"},
+  {id:"child-led", label:"Children took the lead"},
+  {id:"persisted", label:"Kept going when it got hard"},
+  {id:"joined-in", label:"Quieter children joined in"},
+  {id:"new-words", label:"Used new words"},
+  {id:"needed-adult", label:"Needed a lot of adult help", hard:true},
+  {id:"lost-interest", label:"Lost interest quickly", hard:true},
+  {id:"squabbles", label:"Squabbles over materials", hard:true},
+  {id:"too-hard", label:"Too hard", hard:true},
+  {id:"too-easy", label:"Too easy", hard:true}
+];
+var BRIDGES = {
+  CL:["Add a running commentary: describe what each child is doing, then pause so they can answer.","Introduce three new words for the materials and use each one several times.","End with a tell-a-friend moment: each child tells another what they did."],
+  PD:["Take it outside and make it big: chalk, crates, large brushes.","Add tools that need a pincer grip: tweezers, pegs, pipettes.","Turn it into a carry, push or balance challenge."],
+  PSED:["Make it a two-person job so children have to share and take turns.","Add a plan-first step: each child says what they will do before starting.","Finish by naming how it felt when it worked and when it went wrong."],
+  L:["Make labels, tickets or signs for it together.","Find a picture book that links to it and leave it nearby.","Take photos and let children dictate a caption for each one."],
+  M:["Count, compare and order what you use: more, fewer, longest, heaviest.","Add a pattern to copy and continue.","Use position words as you go: on top, under, next to, between."],
+  UW:["Ask what they notice and what might happen next before you start.","Bring in a natural or real-life version of the materials to compare.","Link it to people and places the children know: home, the shop, the park."],
+  EAD:["Add music and watch how the play changes.","Offer a way to record it: paint it, build it, act it out.","Put out open-ended materials and let the children change the rules."]
+};
+var HARVARD_EF = {cite:"Center on the Developing Child at Harvard University (2014), Enhancing and Practicing Executive Function Skills with Children from Infancy to Adolescence: activities for 3- to 5-year-olds", url:"https://developingchild.harvard.edu/resources/activities-guide/"};
+var LIBRARY = [
+ {id:"story-talk", name:"Talk-about-it story time", kind:"stories", areas:["CL","L"], ages:["2-3","3-4","4-5"], where:"Indoors", mins:15, prep:5, group:"3 to 5 children",
+  summary:"Share a picture book as a conversation, so the children do more of the telling each time you re-read it.",
+  steps:["Choose a picture book the group already knows a little.","Prompt: ask about the page. Let them finish a sentence, recall what happened, or say what they see and why.","Evaluate and expand: accept the answer and add a word or two (“Yes, a big muddy puddle”).","Repeat: invite the child to say the fuller version.","Now and then, link the story to their own lives (“When did you get muddy?”)."],
+  materials:"A familiar picture book and a quiet corner.",
+  easier:"Stay with naming and pointing, and choose shorter books.",
+  stretch:"Ask recall and why questions, or let a child “read” the book to the group.",
+  ev:{type:"Evidence review", finding:"This is dialogic reading, developed by Whitehurst and colleagues (1988), which uses the PEER sequence (prompt, evaluate, expand, repeat) and CROWD prompts. The EEF Early Years Toolkit rates communication and language approaches at seven additional months of progress on average, on moderate evidence.", cite:"Whitehurst et al. (1988), Developmental Psychology; Education Endowment Foundation, Early Years Toolkit", url:"https://educationendowmentfoundation.org.uk/early-years/toolkit/communication-and-language-approaches"}},
+ {id:"chatter-basket", name:"Chatter basket", kind:"stories", areas:["CL","PSED"], ages:["u2","2-3","3-4"], where:"Indoors", mins:10, prep:10, group:"1 or 2 children",
+  summary:"A basket of curious everyday objects, and an adult who follows the child's lead in back-and-forth talk.",
+  steps:["Notice what the child picks up or looks at, and share that focus.","Respond with interest: a smile, a nod, a comment.","Name it: say what they are seeing, doing or feeling.","Take turns and wait. Give the child time to answer in words, sounds or gestures.","Watch for when they have finished and are ready for something new."],
+  materials:"A basket with six to eight safe, interesting objects: a whisk, a shell, a torch, a bell, a piece of fabric.",
+  easier:"One child at a time. Treat looks and gestures as turns in the conversation.",
+  stretch:"Add a mystery object and wonder aloud together what it could be for.",
+  ev:{type:"Research-based guide", finding:"The Center on the Developing Child at Harvard calls these responsive exchanges “serve and return” and sets out five steps for adults, which the steps here follow. The EYFS framework also describes back-and-forth interaction as the foundation for language and thinking.", cite:"Center on the Developing Child at Harvard University, 5 Steps for Brain-Building Serve and Return", url:"https://bettercarenetwork.org/library/principles-of-good-care-practices/child-development/5-steps-for-brain-building-serve-and-return"}},
+ {id:"copy-tower", name:"Copy my tower", kind:"building", areas:["M","PD"], ages:["3-4","4-5"], where:"Indoors", mins:15, prep:5, group:"2 to 4 children",
+  summary:"Build a small block model and invite the children to build one just like it, talking about where each block goes.",
+  steps:["Build a model from four to six blocks while the children watch.","Give each child the same set of blocks and ask them to make one the same.","Talk about position as they build: on top, under, next to, across.","Compare the two side by side. What is the same? What is different?","Swap roles: a child builds and you copy."],
+  materials:"Interlocking or wooden blocks, two matching sets.",
+  easier:"Use two or three blocks of clearly different colours.",
+  stretch:"Hide the model after ten seconds and build from memory, or copy from a photo.",
+  ev:{type:"Observational study", finding:"In a study of more than a hundred 3-year-olds, children who were better at copying block structures also did better on early maths. This is a link between the two skills, not proof that block play causes maths gains.", cite:"Verdine, Golinkoff, Hirsh-Pasek, Newcombe, Filipowicz and Chang (2014), Child Development", url:"https://www.udel.edu/udaily/2014/sep/playing-with-blocks-092613.html"}},
+ {id:"number-track", name:"Number track race", kind:"games", areas:["M"], ages:["3-4","4-5"], where:"Indoors", mins:15, prep:15, group:"2 to 4 children",
+  summary:"A simple board game on a straight track of ten numbered squares, where children say the numbers as they move.",
+  steps:["Draw a straight track of ten squares numbered 1 to 10.","Take turns with a spinner or dice marked 1 and 2.","As they move, children say the numbers on the squares (“five, six”), not “one, two”.","First to 10 wins. Play again."],
+  materials:"A home-made track, a 1 and 2 spinner, a counter for each child.",
+  easier:"Play one to one and say the numbers together.",
+  stretch:"Extend the track to 20, or play backwards from 10 to 1.",
+  ev:{type:"Randomised trial", finding:"Preschoolers from low-income families who played a linear number board game for four short sessions over about two weeks improved in counting, naming numbers, comparing numbers and number-line estimation. Children who played the same game with colours did not, and the gains were still there nine weeks later.", cite:"Ramani and Siegler (2008), Child Development, 79(2), 375–394", url:"https://eric.ed.gov/?id=EJ789398"}},
+ {id:"freeze-dance", name:"Freeze dance with picture poses", kind:"movement", areas:["PD","PSED","EAD"], ages:["2-3","3-4","4-5"], where:"Indoors or outdoors", mins:10, prep:10, group:"Whole group",
+  summary:"Dance while the music plays and freeze when it stops. For a harder version, freeze in the pose shown on a picture card.",
+  steps:["Play music and dance, fast for fast music and slow for slow.","Stop the music: everyone freezes.","Hold up a stick-figure card and freeze in that pose.","Let a child choose the next card or control the music."],
+  materials:"Music you can pause and five or six pose cards.",
+  easier:"Leave out the cards and freeze in any shape.",
+  stretch:"Dance slowly to fast music and fast to slow music.",
+  ev:{type:"Research-based guide", finding:"Harvard's executive function guide for 3- to 5-year-olds lists freeze dance, with the picture-pose version as the harder step, as practice in stopping an action and shifting attention.", cite:HARVARD_EF.cite, url:HARVARD_EF.url}},
+ {id:"role-play-plan", name:"Role-play corner with a play plan", kind:"pretend", areas:["PSED","CL","EAD"], ages:["3-4","4-5"], where:"Indoors", mins:30, prep:20, group:"3 to 5 children",
+  summary:"Set up a familiar scene and ask each child to say who they will be and what they will do before play begins.",
+  steps:["Set up a scene the children know (clinic, shop, café) with a few real props.","Before play, each child says or draws who they will be and what they will do.","Play alongside if invited. Hold back from directing.","Afterwards, ask what happened and what they would add tomorrow."],
+  materials:"A few real props, paper and pens for plans.",
+  easier:"Offer two roles to choose from and model the first exchange.",
+  stretch:"Children make their own props, or write a sign or a menu for the scene.",
+  ev:{type:"Research-based guide", finding:"The same Harvard guide describes imaginary play with roles, rules and props, and play plans made beforehand, as practice in planning, holding ideas in mind and self-control.", cite:HARVARD_EF.cite, url:HARVARD_EF.url}},
+ {id:"rhyme-basket", name:"Rhyme time basket", kind:"movement", areas:["L","CL"], ages:["u2","2-3","3-4","4-5"], where:"Indoors", mins:10, prep:10, group:"Small or whole group",
+  summary:"Objects in a basket stand for nursery rhymes. A child picks one and everyone joins in with the rhyme and actions.",
+  steps:["Put objects that stand for rhymes in a basket: a spider, a star, a bus, a sheep.","A child picks one, and everyone says or sings that rhyme with actions.","Pause before the rhyming word and let the children fill it in.","Swap in a silly rhyming word and see who notices."],
+  materials:"A basket and five or six small objects or pictures.",
+  easier:"Keep to two or three well-known rhymes and repeat them daily.",
+  stretch:"Ask for other words that rhyme, real or made up.",
+  ev:{type:"Longitudinal study", finding:"A study that followed 64 children from age 3 found that those who knew more nursery rhymes early on went on to do better in reading and spelling over the next three years, after accounting for social background and IQ.", cite:"Bryant, Bradley, Maclean and Crossland (1989), Journal of Child Language, 16(2), 407–428", url:"https://www.cambridge.org/core/journals/journal-of-child-language/article/nursery-rhymes-phonological-skills-and-reading/53EE25F1E011C8090E659A8FABBB209E"}},
+ {id:"tell-act", name:"Tell it, act it", kind:"pretend", areas:["CL","L","PSED","EAD"], ages:["3-4","4-5"], where:"Indoors", mins:20, prep:5, group:"Whole group",
+  summary:"A child tells you a story, you write it down word for word, and the group acts it out later the same day.",
+  steps:["During free play, a child tells you a story. Write it down exactly as told; a few sentences is plenty.","At group time, read the story aloud.","The author picks a part and classmates act out the rest on a taped-off stage.","Keep a list so that every child who wants to gets a turn over the week."],
+  materials:"A notebook and masking tape for the stage.",
+  easier:"Start from a photo or a toy and take one sentence.",
+  stretch:"Read the story back, pointing at the words, and ask the author what to add.",
+  ev:{type:"Controlled study", finding:"Based on Vivian Paley's storytelling and story-acting practice. A year-long study with 149 preschoolers in 13 classrooms linked taking part to gains in narrative comprehension and print and word awareness, among other measures.", cite:"Nicolopoulou, Cortina, Ilgaz, Cates and de Sá (2015), Early Childhood Research Quarterly, 31, 147–162", url:"https://doi.org/10.1016/j.ecresq.2015.01.006"}},
+ {id:"loose-parts", name:"Loose parts tray", kind:"exploring", areas:["EAD","UW","M"], ages:["2-3","3-4","4-5"], where:"Indoors or outdoors", mins:30, prep:15, group:"3 to 5 children",
+  summary:"A tray of open-ended materials with no set purpose. Children move, sort, stack and combine them however they choose.",
+  steps:["Set out a divided tray of loose materials: pebbles, corks, lids, pine cones, fabric scraps, tubes.","Say nothing about what to make. Watch what the children do first.","Describe what you see (“You lined them up from big to small”).","Photograph what they make before tidying, and talk about it at group time."],
+  materials:"Natural and found objects, a divided tray, a mat or frame to work on.",
+  easier:"Offer fewer kinds of material and larger pieces.",
+  stretch:"Add mirrors, a balance scale or pattern cards.",
+  safety:"Check every item for size and sharp edges. Avoid small parts with under-threes.",
+  ev:{type:"Theory", finding:"Simon Nicholson's 1971 theory of loose parts proposes that the more variables an environment offers, the more inventive the play. It is a design theory, not a trial, so treat it as a rationale and let your own log show whether it works for your group.", cite:"Nicholson (1971), How NOT to Cheat Children: The Theory of Loose Parts", url:"https://early-education.org.uk/?p=9402"}},
+ {id:"treasure-basket", name:"Treasure basket", kind:"exploring", areas:["PD","CL","UW"], ages:["u2"], where:"Indoors", mins:20, prep:15, group:"1 to 3 babies",
+  summary:"A low basket of natural and household objects for seated babies to handle, mouth and explore at their own pace.",
+  steps:["Fill a sturdy low basket with objects of different textures, weights and sounds. Avoid plastic.","Seat babies beside the basket so that they can reach in.","Sit close and stay quiet. Let them choose and explore.","Change a few items each week."],
+  materials:"A wooden spoon, a metal whisk, a natural sponge, a leather purse, a large shell, a brush.",
+  easier:"Offer three or four objects on a mat.",
+  stretch:"For toddlers, add tins and tubes so that they can fill, empty and post.",
+  safety:"Nothing small enough to swallow. Stay within reach throughout.",
+  ev:{type:"Practice guidance", finding:"Treasure baskets and heuristic play come from Elinor Goldschmied's work with babies and toddlers, in which the adult organises and observes but does not direct. This is established practice guidance, not a trial.", cite:"Goldschmied and Jackson (1994), People Under Three", url:"https://www.ascd.org/el/articles/keeping-the-roots-of-learning-alive-with-heuristic-play"}},
+ {id:"threading-dough", name:"Threading and dough station", kind:"building", areas:["PD","L"], ages:["2-3","3-4","4-5"], where:"Indoors", mins:15, prep:10, group:"2 to 4 children",
+  summary:"A table for small hand movements: rolling, pinching and squeezing dough, then threading beads or pasta.",
+  steps:["Warm up with dough: roll, squeeze, pinch, poke.","Thread large beads or pasta tubes on to a lace or pipe cleaner.","Add tweezers or pegs to move small items between pots.","Talk about what their fingers are doing."],
+  materials:"Play dough, laces or pipe cleaners, large beads or pasta, tweezers, pegs.",
+  easier:"Use stiff pipe cleaners and large-holed beads.",
+  stretch:"Copy a colour pattern, or cut dough with scissors.",
+  ev:{type:"Longitudinal study", finding:"Across several large longitudinal datasets, fine motor skills at school entry were a strong additional predictor of later reading and maths achievement. This is a link, not proof of cause, and it was measured at kindergarten age.", cite:"Grissmer, Grimm, Aiyer, Murrah and Steele (2010), Developmental Psychology, 46(5), 1008–1017", url:"https://pubmed.ncbi.nlm.nih.gov/20822219/"}},
+ {id:"rough-ground", name:"Rough ground adventure", kind:"outdoors", areas:["PD","UW"], ages:["2-3","3-4","4-5"], where:"Outdoors", mins:30, prep:10, group:"Small or whole group",
+  summary:"Regular play on uneven, natural ground: slopes, logs, stones and trees, in place of flat play surfaces.",
+  steps:["Choose a patch with slopes, logs, stones or low branches. A garden corner will do.","Let the children find their own routes: over, under, along, around.","Name what their bodies are doing: balancing, climbing, crawling, jumping.","Collect one natural object each to talk about back inside."],
+  materials:"A natural outdoor space, or logs, crates and planks to make one.",
+  easier:"Hold a hand along a low log. Start with gentle slopes.",
+  stretch:"Children design their own obstacle route and lead a friend along it.",
+  safety:"Check the ground first and agree boundaries with the children.",
+  ev:{type:"Controlled study", finding:"A Norwegian study compared children who played in a natural landscape with a group using a traditional playground. The findings point to natural environments supporting motor development, especially balance and coordination.", cite:"Fjørtoft (2004), Children, Youth and Environments, 14(2), 21–44", url:"https://whitehutchinson.com/news/learnenews/2005/10_11_12/article104.shtml"}},
+ {id:"music-circle", name:"Music and movement circle", kind:"movement", areas:["EAD","PD","CL"], ages:["u2","2-3","3-4","4-5"], where:"Indoors or outdoors", mins:15, prep:5, group:"Whole group",
+  summary:"Songs with actions, shakers and scarves, including songs that add a new action each verse.",
+  steps:["Open with the same hello song every time.","Sing two or three action songs, including one that adds a new action each verse.","Hand out shakers or scarves and play fast and slow, loud and quiet.","Close with a calm song and slow breathing."],
+  materials:"Shakers, scarves, a drum.",
+  easier:"Keep to a few well-known songs and repeat them.",
+  stretch:"Let a child lead, or count backwards in a song.",
+  ev:{type:"Longitudinal study", finding:"In a study of 3,031 Australian children, more frequent shared music-making at home at age 2 to 3 had small positive links with prosocial skills, attention and numeracy at age 4 to 5. The study looked at music at home with parents, so apply it to group settings with care.", cite:"Williams, Barrett, Welch, Abad and Broughton (2015), Early Childhood Research Quarterly, 31, 113–124", url:"https://doi.org/10.1016/j.ecresq.2015.01.004"}},
+ {id:"feelings-faces", name:"Feelings faces", kind:"stories", areas:["PSED","CL"], ages:["3-4","4-5"], where:"Indoors", mins:10, prep:10, group:"Small group",
+  summary:"Name and copy feelings with face cards or a mirror, then use a one-line story to talk about what might help.",
+  steps:["Show a face card or use a mirror: happy, sad, cross, scared, calm.","Name the feeling and copy the face together.","Tell a one-line story (“Someone took Teddy's brick”) and ask how Teddy feels.","Ask what might help Teddy, and act out one idea."],
+  materials:"Face cards or a mirror, and a soft toy.",
+  easier:"Start with happy and sad only.",
+  stretch:"Children tell their own one-line story for a feeling.",
+  ev:{type:"Randomised trial", finding:"A randomised trial of the Preschool PATHS curriculum in 20 Head Start classrooms, with weekly teacher-led lessons over nine months, found that children in PATHS classrooms had better emotion knowledge and were rated as less socially withdrawn. This activity borrows one element; it is not the full programme.", cite:"Domitrovich, Cortes and Greenberg (2007), Journal of Primary Prevention, 28, 67–91", url:"https://doi.org/10.1007/s10935-007-0081-0"}},
+ {id:"sort-switch", name:"Sort it, then switch", kind:"games", areas:["M","PSED"], ages:["3-4","4-5"], where:"Indoors", mins:10, prep:5, group:"2 to 4 children",
+  summary:"Sort a mixed set by one rule, then change the rule and sort the same objects again.",
+  steps:["Sort a mixed set by colour into hoops or bowls.","Mix them up. Now sort by shape or size.","Ask the children to think of another way to sort.","Play “guess my rule”: you sort, they work out how."],
+  materials:"Buttons, bears or blocks that differ in colour, shape and size.",
+  easier:"Use two colours and one rule.",
+  stretch:"Sort by two rules at once (red and round).",
+  ev:{type:"Research-based guide", finding:"Harvard's guide lists matching and sorting games in which the sorting rule changes, for example colour first and then shape, as practice in flexible thinking.", cite:HARVARD_EF.cite, url:HARVARD_EF.url}},
+ {id:"cook-together", name:"Cook together", kind:"exploring", areas:["M","UW","PD","PSED"], ages:["2-3","3-4","4-5"], where:"Indoors", mins:30, prep:15, group:"3 or 4 children",
+  summary:"A simple no-heat recipe with a picture card for each step: wait, measure, count, stir, share.",
+  steps:["Wash hands and look at the picture recipe together.","Children wait for each instruction, then measure and count the ingredients.","Take turns to pour, stir and spread.","Talk about how the food changes, then share it."],
+  materials:"A no-heat recipe (fruit salad, sandwiches, dough), picture recipe cards, spoons and cups.",
+  easier:"A two-step recipe with pre-measured pots.",
+  stretch:"Children read the picture recipe to a friend, or compare which cup holds more.",
+  safety:"Check allergies and dietary needs first. Adults handle anything sharp or hot.",
+  ev:{type:"Research-based guide", finding:"The same Harvard guide notes that cooking gives practice in waiting for instructions, holding the steps in mind, and paying close attention while measuring and counting.", cite:HARVARD_EF.cite, url:HARVARD_EF.url}},
+ {id:"grow-bean", name:"Grow a bean", kind:"outdoors", areas:["UW","CL","M"], ages:["2-3","3-4","4-5"], where:"Indoors or outdoors", mins:15, prep:10, group:"Small group, then a daily check",
+  summary:"Plant beans in clear pots, check them every day, and talk about and record what changes.",
+  steps:["Each child plants a bean against the side of a clear pot with damp cotton wool or soil.","Check at the same time each day. What has changed?","Measure the shoot with blocks or a paper strip, and keep the strips to compare.","Take a photo each week and put the photos in order."],
+  materials:"Broad beans, clear pots, cotton wool or compost, paper strips.",
+  easier:"One shared pot for the group.",
+  stretch:"Grow one bean in a dark cupboard and compare.",
+  ev:{type:"Statutory framework", finding:"Understanding the World is one of the four specific areas of learning in England's EYFS statutory framework. No trial sits behind this activity; it is a long-standing way to give children first-hand experience of the natural world and the words to describe it.", cite:"Department for Education, Early years foundation stage statutory framework (2025)", url:"https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2"}}
+];
+var EEF = [
+  ["Communication and language approaches",7,"Moderate"],
+  ["Early numeracy approaches",7,"Limited"],
+  ["Physical development approaches",5,"Very limited"],
+  ["Early literacy approaches",4,"Extensive"],
+  ["Play-based learning",4,"Very limited"],
+  ["Self-regulation strategies",3,"Very limited"],
+  ["Social and emotional learning strategies",3,"Very limited"]
+];
+
+/* ---------- Dates ---------- */
+function pad(n){return (n<10?"0":"")+n;}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function addDays(s,n){var d=parse(s);d.setDate(d.getDate()+n);return iso(d);}
+function today(){return iso(new Date());}
+function monday(s){var d=parse(s);var w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return iso(d);}
+function workday(n){ /* n working days from today; negative goes back */
+  var d=new Date(), step=n<0?-1:1, left=Math.abs(n);
+  while(left>0){d.setDate(d.getDate()+step);if(d.getDay()!==0&&d.getDay()!==6)left--;}
+  return iso(d);
+}
+function nice(s,opt){return parse(s).toLocaleDateString("en-GB",opt||{weekday:"long",day:"numeric",month:"long"});}
+function daysAgo(s){return Math.round((parse(today())-parse(s))/864e5);}
+
+/* ---------- State ---------- */
+var KEY="nursery-activity-journal-v1";
+var state=null, memoryOnly=false;
+var ui={day:today(), week:monday(today()), libArea:"", libAge:"", libKind:"", libQ:"", period:30, spark:null};
+function uid(p){return p+"-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function seed(){
+  function L(off,act,inv,wb,tags,notes,next,n){return {id:uid("l"),date:workday(off),act:act,inv:inv,wb:wb,tags:tags,notes:notes||"",next:next||"",group:"Example group",count:n||6,example:true};}
+  return {
+    version:1, hasExamples:true, settings:{age:""}, custom:[],
+    logs:[
+      L(0,"story-talk",5,5,["lots-talk","asked-again"],"They retold the story with their own endings. M. spoke in full sentences for the first time in a group.","Leave the book in the role-play corner.",5),
+      L(0,"freeze-dance",4,5,["joined-in"],"The picture poses caused a lot of laughter. Two children found stopping hard.","",12),
+      L(-1,"copy-tower",5,4,["persisted","child-led"],"Two children kept rebuilding after the tower fell and started setting challenges for each other.","Try building from a photo.",4),
+      L(-2,"rhyme-basket",3,4,["needed-adult"],"They joined in with the actions more than the words.","",10),
+      L(-3,"number-track",2,3,["lost-interest","squabbles"],"Too many children waiting for a turn. Interest dropped after the first game.","Play in pairs next time.",6),
+      L(-4,"story-talk",4,4,["new-words"],"“Enormous” and “squelch” came up again at lunch.","",4),
+      L(-5,"loose-parts",5,5,["child-led","lots-talk"],"Long, quiet concentration. They made a “road” of corks and lids across the mat.","",5),
+      L(-6,"feelings-faces",3,3,["needed-adult"],"Happy and sad were clear; “cross” and “scared” were harder to tell apart.","",6),
+      L(-7,"music-circle",4,5,["joined-in","asked-again"],"The scarves were the favourite part.","",12)
+    ],
+    plans:[
+      {id:uid("p"),date:workday(0),act:"role-play-plan",note:"Clinic scene. Ask for plans before play.",example:true},
+      {id:uid("p"),date:workday(1),act:"sort-switch",note:"Use the button tin.",example:true},
+      {id:uid("p"),date:workday(2),act:"rough-ground",note:"Garden corner, if dry.",example:true}
+    ],
+    ideas:[
+      {id:uid("i"),text:"Take the block towers outside with crates and planks, and see whether the same two children lead.",areas:["PD","M"],act:"copy-tower",created:workday(-1),example:true}
+    ]
+  };
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){var s=JSON.parse(raw);if(s&&Array.isArray(s.logs)){state=normalise(s);return;}}
+  }catch(e){memoryOnly=true;}
+  state=seed();
+}
+function normalise(s){
+  s.logs=s.logs||[];s.plans=s.plans||[];s.ideas=s.ideas||[];s.custom=s.custom||[];s.settings=s.settings||{age:""};
+  return s;
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(state));memoryOnly=false;}catch(e){memoryOnly=true;}
+}
+
+/* ---------- Helpers ---------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function allActs(){return LIBRARY.concat(state.custom);}
+function act(id){var a=allActs();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null;}
+function actName(id){var a=act(id);return a?a.name:"Removed activity";}
+function area(id){for(var i=0;i<AREAS.length;i++)if(AREAS[i].id===id)return AREAS[i];return null;}
+function meter(n){var h='<span class="meter" aria-hidden="true">';for(var i=1;i<=5;i++)h+='<b class="'+(i<=Math.round(n)?"on":"")+'"></b>';return h+'</span>';}
+function score(label,n){return '<span class="score">'+esc(label)+' '+meter(n)+' <strong>'+n+'</strong> '+esc(LEVEL[n])+'</span>';}
+function tagLabel(id){for(var i=0;i<TAGS.length;i++)if(TAGS[i].id===id)return TAGS[i];return {label:id};}
+function avg(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;}
+function fix1(n){return (Math.round(n*10)/10).toFixed(1);}
+function matchesAge(a,age){return !age||!a.ages||a.ages.indexOf(age)>=0;}
+
+/* ---------- Statistics and recommendations ---------- */
+function stats(days){
+  var logs=state.logs.filter(function(l){var d=daysAgo(l.date);return d>=0&&d<days;});
+  var byAct={}, byKind={}, areaCount={}, tagCount={};
+  AREAS.forEach(function(a){areaCount[a.id]=0;});
+  logs.forEach(function(l){
+    var a=act(l.act); if(!a)return;
+    var s=byAct[l.act]||(byAct[l.act]={id:l.act,n:0,inv:[],wb:[],last:l.date,tags:{}});
+    s.n++;s.inv.push(l.inv);s.wb.push(l.wb);if(l.date>s.last)s.last=l.date;
+    (l.tags||[]).forEach(function(t){s.tags[t]=(s.tags[t]||0)+1;tagCount[t]=(tagCount[t]||0)+1;});
+    var k=byKind[a.kind]||(byKind[a.kind]={kind:a.kind,inv:[]});k.inv.push(l.inv);
+    (a.areas||[]).forEach(function(id){if(id in areaCount)areaCount[id]++;});
+  });
+  return {logs:logs,byAct:byAct,byKind:byKind,areaCount:areaCount,tagCount:tagCount};
+}
+function everLogged(id){return state.logs.some(function(l){return l.act===id;});}
+function lastLogged(id){var d=null;state.logs.forEach(function(l){if(l.act===id&&(!d||l.date>d))d=l.date;});return d;}
+function recommend(){
+  var s=stats(21), cover=stats(14).areaCount, age=state.settings.age, out=[], used={};
+  var kindScore={};Object.keys(s.byKind).forEach(function(k){kindScore[k]=avg(s.byKind[k].inv);});
+  function push(r){if(!r.a||used[r.a.id])return;used[r.a.id]=1;out.push(r);}
+  function notRecent(a){var d=lastLogged(a.id);return !d||daysAgo(d)>=7;}
+  var pool=allActs().filter(function(a){return matchesAge(a,age);});
+  var acts=Object.keys(s.byAct).map(function(k){var x=s.byAct[k];x.avg=avg(x.inv);return x;});
+
+  // 1. Build on what absorbed them
+  acts.filter(function(x){return x.avg>=4;}).sort(function(a,b){return b.avg-a.avg;}).slice(0,2).forEach(function(x){
+    var a=act(x.id);
+    var why="Involvement averaged "+fix1(x.avg)+" out of 5 across "+x.n+(x.n===1?" session":" sessions")+" in the last three weeks.";
+    var tip=x.tags["too-easy"]||x.avg>=4.5?(a.stretch||"Add one new challenge and keep everything else the same."):"Repeat it this week so that more children get a turn, then stretch it.";
+    push({type:"build",label:"Build on it",a:a,why:why,tip:tip});
+    var sib=pool.filter(function(b){return b.id!==a.id&&!used[b.id]&&notRecent(b)&&(b.kind===a.kind||b.areas[0]===a.areas[0]);})
+      .sort(function(p,q){return (everLogged(p.id)?1:0)-(everLogged(q.id)?1:0);})[0];
+    if(sib)push({type:"next",label:"Because they loved "+a.name,a:sib,why:"It shares "+(sib.kind===a.kind?"the same kind of play ("+KINDS[a.kind].toLowerCase()+")":"the same main area of learning")+" and has not been logged in the last week.",tip:sib.summary});
+  });
+  // 2. Fill the gaps in coverage
+  if(s.logs.length){
+    AREAS.slice().sort(function(a,b){return cover[a.id]-cover[b.id];}).slice(0,2).forEach(function(g){
+      var cands=pool.filter(function(b){return b.areas.indexOf(g.id)>=0&&notRecent(b);}).sort(function(p,q){
+        var ps=(p.areas[0]===g.id?2:0)+(kindScore[p.kind]||3)/5, qs=(q.areas[0]===g.id?2:0)+(kindScore[q.kind]||3)/5;return qs-ps;});
+      var pick=cands.filter(function(c){return !used[c.id];})[0];
+      if(pick){
+        var c=cover[g.id];
+        var why=g.name+" came up in "+(c===0?"no sessions":c===1?"1 session":c+" sessions")+" in the last two weeks, fewer than most other areas.";
+        if(kindScore[pick.kind]>=4)why+=" Your group has responded well to "+KINDS[pick.kind].toLowerCase()+".";
+        push({type:"gap",label:"Fill a gap",a:pick,why:why,tip:pick.summary});
+      }
+    });
+  }
+  // 3. Rework what fell flat
+  acts.filter(function(x){return x.avg<=2.5&&!used[x.id];}).slice(0,2).forEach(function(x){
+    var a=act(x.id), tip=a.easier||"Shorten it and try it with a smaller group.";
+    if(x.tags.squabbles)tip="Put out more sets or run it in pairs. "+tip;
+    else if(x.tags["too-easy"])tip=a.stretch||tip;
+    else if(x.tags["lost-interest"])tip="Keep it to five minutes and stop while they are still keen. "+tip;
+    push({type:"rework",label:"Try it differently",a:a,why:"Involvement averaged "+fix1(x.avg)+" out of 5. One low session says more about the set-up than about the activity.",tip:tip});
+  });
+  // 4. Something not tried yet
+  var fresh=pool.filter(function(b){return !everLogged(b.id)&&!used[b.id];})
+    .sort(function(p,q){return (kindScore[q.kind]||3)-(kindScore[p.kind]||3);})[0];
+  if(fresh)push({type:"fresh",label:"Not tried yet",a:fresh,why:"You have not logged this one."+(kindScore[fresh.kind]>=4?" It is the kind of play your group has been most involved in.":""),tip:fresh.summary});
+  return out.slice(0,7);
+}
+function makeSpark(){
+  var s=stats(30), cover=s.areaCount;
+  var acts=Object.keys(s.byAct).map(function(k){return {id:k,avg:avg(s.byAct[k].inv)};}).sort(function(a,b){return b.avg-a.avg;}).slice(0,3);
+  var base=acts.length?act(acts[Math.floor(Math.random()*acts.length)].id):LIBRARY[Math.floor(Math.random()*LIBRARY.length)];
+  var gaps=AREAS.filter(function(a){return base.areas.indexOf(a.id)<0;}).sort(function(a,b){return cover[a.id]-cover[b.id];}).slice(0,3);
+  var g=gaps[Math.floor(Math.random()*gaps.length)], b=BRIDGES[g.id];
+  return {act:base.id, area:g.id, text:"Take "+base.name+" and give it a "+g.name+" twist. "+b[Math.floor(Math.random()*b.length)], loved:acts.length>0};
+}
+
+/* ---------- Icons, faces and the mascot (all drawn for this app) ---------- */
+var IC={
+  sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/>',
+  calendar:'<rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle class="f" cx="8.5" cy="14.8" r="1.1"/><circle class="f" cx="12" cy="14.8" r="1.1"/><circle class="f" cx="15.5" cy="14.8" r="1.1"/>',
+  bulb:'<path d="M9.5 18.5h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>',
+  book:'<path d="M12 6.5C10.2 5.2 7.7 4.7 4.5 5v13c3.2-.3 5.7.2 7.5 1.5 1.8-1.3 4.3-1.8 7.5-1.5V5c-3.2-.3-5.7.2-7.5 1.5z"/><path d="M12 6.5v13"/>',
+  chart:'<path d="M4 20h16"/><rect x="5.4" y="11" width="3.2" height="6.5" rx="1.2"/><rect x="10.4" y="6" width="3.2" height="11.5" rx="1.2"/><rect x="15.4" y="9" width="3.2" height="8.5" rx="1.2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  left:'<path d="M14.5 5.5L8 12l6.5 6.5"/>',
+  right:'<path d="M9.5 5.5L16 12l-6.5 6.5"/>',
+  pencil:'<path d="M4 20l1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z"/>',
+  trash:'<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.8 12a1.5 1.5 0 0 0 1.5 1.5h6.4a1.5 1.5 0 0 0 1.5-1.5l.8-12M10 11v5.5M14 11v5.5"/>',
+  share:'<path d="M12 3.5v10.5M8 7.5l4-4 4 4"/><path d="M5 12v6.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V12"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  star:'<path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.6l-5.3 2.8 1.1-5.9L3.5 9.4l5.9-.8z"/>',
+  sparkle:'<path d="M11 3l1.9 5.6L18.5 10.5l-5.6 1.9L11 18l-1.9-5.600L3.500 10.500l5.600-1.900z"/><path d="M18.500 15l.7 1.800 1.800.700-1.800.700-.700 1.800-.700-1.800-1.800-.700 1.800-.700z"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  timer:'<circle cx="12" cy="13.5" r="7"/><path d="M12 10v3.5M9.5 3.5h5M12 3.5v3"/>',
+  people:'<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9.5" r="2.3"/><path d="M16.5 14.2c2.300.2 4 1.900 4 4.300"/>',
+  basket:'<path d="M4 10h16l-1.500 9a1.500 1.500 0 0 1-1.500 1.300H7a1.500 1.500 0 0 1-1.500-1.300z"/><path d="M8 10l3-6M16 10l-3-6"/>',
+  pin:'<path d="M12 21s-6.500-5.500-6.500-11a6.500 6.500 0 0 1 13 0c0 5.500-6.500 11-6.500 11z"/><circle cx="12" cy="10" r="2.300"/>',
+  search:'<circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20"/>',
+  redo:'<path d="M5 11a7 7 0 0 1 12.500-3.500L19.500 9.500M19.500 4.500v5h-5"/><path d="M19 13a7 7 0 0 1-12.500 3.500"/>',
+  heart:'<path d="M12 20s-7.500-4.600-7.500-10A4.300 4.300 0 0 1 12 7.600 4.300 4.300 0 0 1 19.500 10c0 5.400-7.500 10-7.500 10z"/>',
+  talk:'<path d="M5.500 5h13A2.500 2.500 0 0 1 21 7.500v7a2.500 2.500 0 0 1-2.500 2.500H12l-4.500 3.500V17h-2A2.500 2.500 0 0 1 3 14.500v-7A2.500 2.500 0 0 1 5.500 5z"/><path d="M8 9.500h8M8 12.500h5"/>',
+  blocks:'<rect x="3.500" y="12.500" width="8" height="8" rx="1.800"/><rect x="12.500" y="12.500" width="8" height="8" rx="1.800"/><rect x="8" y="3.500" width="8" height="8" rx="1.800"/>',
+  dice:'<rect x="4" y="4" width="16" height="16" rx="4"/><circle class="f" cx="8.500" cy="8.500" r="1.300"/><circle class="f" cx="15.500" cy="8.500" r="1.300"/><circle class="f" cx="12" cy="12" r="1.300"/><circle class="f" cx="8.500" cy="15.500" r="1.300"/><circle class="f" cx="15.500" cy="15.500" r="1.300"/>',
+  note:'<path d="M9 17.500V6l10-2v11.500"/><circle cx="6.500" cy="17.500" r="2.500"/><circle cx="16.500" cy="15.500" r="2.500"/>',
+  crown:'<path d="M4 8l3.500 4L12 5.500l4.500 6.500L20 8l-1.500 10h-13z"/>',
+  lens:'<circle cx="10.500" cy="10.500" r="6"/><path d="M15 15l5.500 5.500M8.300 10.500a2.200 2.200 0 0 1 2.200-2.200"/>',
+  leaf:'<path d="M4.500 19.500C4.500 11 9.500 5 19.500 4.500c.500 10-5.500 15-14 15z"/><path d="M4.500 19.500l8-8"/>',
+  ball:'<circle cx="12" cy="12" r="8.500"/><path d="M5.500 6.500c3.500 2.500 3.500 8.500 0 11M18.500 6.500c-3.500 2.500-3.500 8.500 0 11"/>',
+  letters:'<text x="12" y="16.500" text-anchor="middle" font-size="12.500">Aa</text>',
+  shapes:'<circle cx="7.500" cy="7.500" r="3.500"/><rect x="13.500" y="4" width="7" height="7" rx="1.500"/><path d="M12 13.500l5 7.500H7z"/>',
+  globe:'<circle cx="12" cy="12" r="8.500"/><path d="M3.500 12h17M12 3.500c-3.500 3-3.500 14 0 17M12 3.500c3.500 3 3.500 14 0 17"/>',
+  palette:'<path d="M12 3.500a8.500 8.500 0 1 0 0 17c1.400 0 2-.900 2-1.900 0-1.100-.800-1.600.200-2.600s5.300.500 6.100-4.200C21 7 16.800 3.500 12 3.500z"/><circle class="f" cx="8" cy="11" r="1.200"/><circle class="f" cx="11.500" cy="7.500" r="1.200"/><circle class="f" cx="16" cy="9.500" r="1.200"/>'
+};
+function ic(n,cls){return '<svg class="ic'+(cls?" "+cls:"")+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(IC[n]||"")+'</svg>';}
+var AREA_IC={CL:"talk",PD:"ball",PSED:"heart",L:"letters",M:"shapes",UW:"globe",EAD:"palette"};
+var KIND_IC={stories:"talk",building:"blocks",games:"dice",movement:"note",pretend:"crown",exploring:"lens",outdoors:"leaf",other:"star"};
+var KIND_C={stories:"var(--sky)",building:"var(--sun)",games:"var(--grape)",movement:"var(--berry)",pretend:"var(--coral)",exploring:"var(--teal)",outdoors:"var(--leaf)",other:"var(--muted)"};
+var REC={build:{c:"var(--sun)",ic:"star"},next:{c:"var(--berry)",ic:"heart"},gap:{c:"var(--sky)",ic:"plus"},rework:{c:"var(--coral)",ic:"redo"},fresh:{c:"var(--leaf)",ic:"sparkle"}};
+function tile(icon,color,cls){return '<span class="tile'+(cls?" "+cls:"")+'" style="--c:'+color+'">'+ic(icon)+'</span>';}
+function kindTile(a,cls){return tile(KIND_IC[a.kind]||"star",KIND_C[a.kind]||"var(--muted)",cls);}
+function areaChip(id,short){var a=area(id);return a?'<span class="chip" style="--c:var(--a-'+id+')" title="'+esc(a.name)+'"><span class="dot">'+ic(AREA_IC[id])+'</span>'+(short?id:esc(a.name))+'</span>':"";}
+function areaChips(ids){return '<span class="chips">'+(ids||[]).map(function(id){return areaChip(id,false);}).join("")+'</span>';}
+function areaDots(ids){return '<span class="chips">'+(ids||[]).map(function(id){return areaChip(id,true);}).join("")+'</span>';}
+function stars(n){var r=Math.round(n),h='<span class="stars" role="img" aria-label="'+r+' out of 5">';for(var i=1;i<=5;i++)h+=ic("star",i<=r?"on":"");return h+'</span>';}
+var MOUTH=["","M8.6 16.6c1.2-2 5.600-2 6.800 0","M9 16c1.200-1 4.800-1 6 0","M9 15.400h6","M8.500 14.400c1.200 2.100 5.800 2.100 7 0","M8 13.700h8c0 2.600-1.800 4.300-4 4.300s-4-1.700-4-4.300z"];
+function face(n,cls){n=Math.max(1,Math.min(5,Math.round(n)));
+  return '<svg class="face f'+n+(cls?" "+cls:"")+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fbg" cx="12" cy="12" r="10.500"/><circle class="fe" cx="8.800" cy="10" r="1.300"/><circle class="fe" cx="15.200" cy="10" r="1.300"/><path class="fm'+(n===5?" fill":"")+'" d="'+MOUTH[n]+'"/></svg>';}
+function mascot(){return '<svg class="mascot" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><g class="leafs"><path d="M32 21c0-8-5-13-13-13 0 8 5 13 13 13z" fill="#22a86b"/><path d="M32 21c0-7 4.500-11.500 12-11.500 0 7-4.500 11.500-12 11.500z" fill="#49c98d"/></g><circle cx="32" cy="40" r="20" fill="#f9c63d"/><circle cx="25" cy="38" r="2.500" fill="#3b2a00"/><circle cx="39" cy="38" r="2.500" fill="#3b2a00"/><path d="M25.500 45c2.500 3.200 10.500 3.200 13 0" fill="none" stroke="#3b2a00" stroke-width="2.400" stroke-linecap="round"/><circle cx="20" cy="44" r="3" fill="#ff8f6b" opacity=".65"/><circle cx="44" cy="44" r="3" fill="#ff8f6b" opacity=".65"/></svg>';}
+function empty(text){return '<div class="card flat">'+mascot()+'<p class="muted">'+text+'</p></div>';}
+var toastT=null;
+function toast(msg){var t=$("toast");t.innerHTML=ic("star")+esc(msg);t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2200);}
+function starInput(name,val){
+  var h='<div class="rate stars-in">';
+  for(var i=1;i<=5;i++)h+='<input type="radio" name="'+name+'" id="'+name+'-'+i+'" value="'+i+'"'+(val===i?" checked":"")+'><label for="'+name+'-'+i+'" class="'+(i<=val?"on":"")+'">'+ic("star")+'<span class="sr">'+i+", "+LEVEL[i]+'</span></label>';
+  return h+'</div><p class="hint" id="'+name+'-hint">'+LEVEL[val]+": "+INV_HINT[val].toLowerCase()+'</p>';
+}
+function faceInput(name,val){
+  var h='<div class="rate faces-in">';
+  for(var i=1;i<=5;i++)h+='<input type="radio" name="'+name+'" id="'+name+'-'+i+'" value="'+i+'"'+(val===i?" checked":"")+'><label for="'+name+'-'+i+'">'+face(i)+'<span>'+WB_HINT[i]+'</span></label>';
+  return h+'</div>';
+}
+
+/* ---------- Views ---------- */
+var NAV=[
+  {id:"today",label:"Today",icon:"sun",c:"var(--sun)"},
+  {id:"plan",label:"Week plan",short:"Plan",icon:"calendar",c:"var(--sky)"},
+  {id:"ideas",label:"Ideas",icon:"bulb",c:"var(--berry)"},
+  {id:"library",label:"Activity library",short:"Library",icon:"book",c:"var(--leaf)"},
+  {id:"insights",label:"Patterns",icon:"chart",c:"var(--grape)"}
+];
+function navHtml(r,short){return NAV.map(function(n){return '<a href="#'+n.id+'" class="navi"'+(n.id===r?' aria-current="page"':'')+'>'+tile(n.icon,n.c)+'<span>'+(short&&n.short?n.short:n.label)+'</span></a>';}).join("");}
+function greeting(){var h=new Date().getHours();return h<12?"Good morning":h<17?"Good afternoon":"Good evening";}
+function banner(){
+  var h="";
+  if(("standalone" in navigator)&&!navigator.standalone&&!state.settings.hideInstall)
+    h+='<div class="note info"><span><strong>Put this journal on your Home Screen.</strong> Tap the Share button in Safari, then Add to Home Screen. Do this before you start logging, because the Home Screen app keeps its own entries.</span><button class="btn small" data-act="hide-install">Got it</button></div>';
+  if(state.hasExamples)h+='<div class="note"><span><strong>These are example entries.</strong> They show how the journal works. Clear them when you are ready to start your own.</span><button class="btn small" data-act="clear-examples">Clear the examples</button></div>';
+  if(memoryOnly)h+='<div class="note"><span><strong>This browser is not saving entries.</strong> Anything you add will be lost when you close the page. Use Back up or restore to keep a copy.</span></div>';
+  var own=state.logs.filter(function(l){return !l.example;}).length;
+  if(own>=5&&(!state.lastBackup||daysAgo(state.lastBackup)>14))
+    h+='<div class="note"><span><strong>Time for a backup.</strong> '+(state.lastBackup?"Your last one was "+daysAgo(state.lastBackup)+" days ago.":"You have not saved one yet.")+'</span><button class="btn small" data-act="backup">Back up now</button></div>';
+  return h;
+}
+function stat(icon,color,n,label){return '<div class="stat">'+tile(icon,color,"lg")+'<div><div class="n">'+n+'</div><div class="l">'+label+'</div></div></div>';}
+function logCard(l){
+  var a=act(l.act);
+  return '<article class="card">'+
+    '<div class="cardhead">'+(a?kindTile(a,"lg"):"")+'<h3>'+esc(actName(l.act))+'</h3>'+
+    '<span class="row tight"><button class="iconbtn sm ghost" data-act="edit-log" data-id="'+l.id+'" aria-label="Edit this entry">'+ic("pencil")+'</button><button class="iconbtn sm ghost" data-act="del-log" data-id="'+l.id+'" aria-label="Delete this entry">'+ic("trash")+'</button></span></div>'+
+    (a?areaChips(a.areas):"")+
+    '<div class="row"><span class="score">'+stars(l.inv)+' Involvement <strong>'+LEVEL[l.inv].toLowerCase()+'</strong></span>'+
+    '<span class="score">'+face(l.wb)+' Wellbeing <strong>'+LEVEL[l.wb].toLowerCase()+'</strong></span></div>'+
+    ((l.tags||[]).length?'<div class="chips">'+l.tags.map(function(t){var T=tagLabel(t);return '<span class="chip plain'+(T.hard?" hard":"")+'">'+esc(T.label)+'</span>';}).join("")+'</div>':"")+
+    (l.notes?'<p>'+esc(l.notes)+'</p>':"")+
+    (l.next?'<p class="why">'+ic("bulb")+'<span><strong>Next time:</strong> '+esc(l.next)+'</span></p>':"")+
+    '<p class="muted small">'+[l.example?"Example":"",esc(l.group||""),l.count?l.count+" children":""].filter(Boolean).join(" · ")+'</p>'+
+  '</article>';
+}
+function viewToday(){
+  var d=ui.day, logs=state.logs.filter(function(l){return l.date===d;});
+  var plans=state.plans.filter(function(p){return p.date===d&&!p.logId;});
+  var areas={};logs.forEach(function(l){var a=act(l.act);if(a)a.areas.forEach(function(x){areas[x]=1;});});
+  var h=banner();
+  h+='<section class="hero"><div class="hero-t">'+mascot()+'<div><p class="eyebrow">'+(d===today()?greeting():d<today()?"Looking back":"Looking ahead")+'</p><h2 class="page">'+esc(nice(d))+'</h2></div></div>'+
+     '<button class="btn primary big" data-act="new-log">'+ic("plus")+'Log an activity</button></section>';
+  h+='<div class="daynav"><button class="iconbtn" data-act="day" data-n="-1" aria-label="Previous day">'+ic("left")+'</button>'+
+     '<input type="date" id="day-input" value="'+d+'" aria-label="Day">'+
+     '<button class="iconbtn" data-act="day" data-n="1" aria-label="Next day">'+ic("right")+'</button>'+
+     (d!==today()?'<button class="btn small quiet" data-act="day-today">Back to today</button>':"")+'</div>';
+  h+='<div class="stats">'+
+     stat("check","var(--leaf)",logs.length,(logs.length===1?"activity":"activities")+" logged")+
+     stat("star","var(--sun)",logs.length?fix1(avg(logs.map(function(l){return l.inv;}))):"–","average involvement, out of 5")+
+     stat("shapes","var(--grape)",Object.keys(areas).length+" of 7","areas of learning touched")+'</div>';
+  if(plans.length){
+    h+='<section class="stack"><h3>Planned for this day</h3>'+plans.map(function(p){var a=act(p.act);
+      return '<div class="card"><div class="cardhead">'+(a?kindTile(a,"lg"):"")+'<div style="flex:1;min-width:0"><h3>'+esc(actName(p.act))+'</h3>'+(p.note?'<p class="muted small">'+esc(p.note)+'</p>':"")+'</div>'+
+      '<button class="btn small primary" data-act="log-plan" data-id="'+p.id+'">Log how it went</button></div></div>';}).join("")+'</section>';
+  }
+  h+='<section class="stack"><h3>What we did</h3>'+(logs.length?logs.map(logCard).join(""):empty("Nothing logged for this day yet. Log an activity while it is fresh. It takes about a minute."))+'</section>';
+  return h;
+}
+function viewPlan(){
+  var h=banner(), w=ui.week, cnt={};AREAS.forEach(function(a){cnt[a.id]=0;});
+  h+='<section class="hero"><div><p class="eyebrow">Week plan</p><h2 class="page">Week of '+esc(nice(w,{day:"numeric",month:"long"}))+'</h2></div>'+
+     '<div class="daynav"><button class="iconbtn" data-act="week" data-n="-7" aria-label="Previous week">'+ic("left")+'</button>'+
+     '<button class="iconbtn" data-act="week" data-n="7" aria-label="Next week">'+ic("right")+'</button>'+
+     (w!==monday(today())?'<button class="btn small quiet" data-act="week-now">This week</button>':"")+'</div></section>';
+  h+='<div class="week">';
+  for(var i=0;i<5;i++){
+    var d=addDays(w,i), items=state.plans.filter(function(p){return p.date===d;});
+    h+='<section class="day'+(d===today()?" today":"")+'"><h3>'+esc(nice(d,{weekday:"long"}))+' <small>'+esc(nice(d,{day:"numeric",month:"short"}))+'</small></h3>';
+    items.forEach(function(p){
+      var a=act(p.act);if(a)a.areas.forEach(function(x){cnt[x]++;});
+      h+='<div class="planitem'+(p.logId?" done":"")+'"><div class="cardhead">'+(a?kindTile(a):"")+'<strong>'+esc(actName(p.act))+'</strong></div>'+(a?areaDots(a.areas):"")+
+         (p.note?'<span class="muted small">'+esc(p.note)+'</span>':"")+
+         '<span class="row tight">'+(p.logId?'<span class="chip"><span class="dot" style="--c:var(--leaf)">'+ic("check")+'</span>Logged</span>':'<button class="btn small" data-act="log-plan" data-id="'+p.id+'">Log it</button>')+
+         '<button class="iconbtn sm ghost" data-act="del-plan" data-id="'+p.id+'" aria-label="Remove from the plan">'+ic("trash")+'</button></span></div>';
+    });
+    h+='<button class="btn small" data-act="new-plan" data-date="'+d+'">'+ic("plus")+'Add</button></section>';
+  }
+  h+='</div>';
+  var missing=AREAS.filter(function(a){return cnt[a.id]===0;});
+  h+='<section class="card"><h3>What this week covers</h3><div class="chips">'+AREAS.map(function(a){return '<span class="chip" style="--c:var(--a-'+a.id+')"><span class="dot">'+ic(AREA_IC[a.id])+'</span>'+esc(a.name)+' · <strong>'+cnt[a.id]+'</strong></span>';}).join("")+'</div>'+
+     '<p class="muted small">'+(missing.length?"Not yet in this week's plan: "+missing.map(function(a){return a.name;}).join(", ")+". The Ideas tab suggests activities for the areas you have covered least.":"Every area of learning appears at least once this week.")+'</p></section>';
+  return h;
+}
+var CARD_C=["var(--sun)","var(--sky)","var(--berry)","var(--leaf)","var(--grape)","var(--coral)","var(--teal)"];
+function fact(icon,label,val,wide){return '<div class="fact'+(wide?" wide":"")+'">'+ic(icon)+'<span><b>'+label+'</b>'+val+'</span></div>';}
+function facts(o){
+  var f=[];
+  if(o.prep!=null&&o.prep!=="")f.push(fact("clock","Prep time",+o.prep?"about "+o.prep+" min":"None"));
+  if(o.mins)f.push(fact("timer","Activity time","about "+o.mins+" min"));
+  if(o.group)f.push(fact("people","Group",esc(o.group)));
+  if(o.where)f.push(fact("pin","Where",esc(o.where)));
+  if(o.materials)f.push(fact("basket","You need",esc(o.materials),true));
+  return f.length?'<div class="facts">'+f.join("")+'</div>':"";
+}
+function recCard(r,n){
+  var R=REC[r.type]||REC.fresh, a=r.a;
+  return '<article class="flash" style="--c:'+CARD_C[n%CARD_C.length]+'"><div class="flash-inner">'+
+    '<div class="flash-face flash-front">'+
+      '<div class="cardhead">'+kindTile(a,"lg")+'<div style="flex:1;min-width:0"><span class="chip" style="--c:'+R.c+'"><span class="dot">'+ic(R.ic)+'</span><strong>'+esc(r.label)+'</strong></span><h3 style="margin-top:6px">'+esc(a.name)+'</h3></div></div>'+
+      areaDots(a.areas)+'<p class="why">'+ic("lens")+'<span>'+esc(r.why)+'</span></p><p>'+esc(r.tip)+'</p>'+facts(a)+
+      '<div class="row tight push"><button class="btn small primary" data-act="new-plan" data-actid="'+a.id+'">'+ic("calendar")+'Add to the plan</button>'+
+      '<button class="btn small" data-act="save-idea" data-actid="'+a.id+'" data-text="'+esc(r.label+": "+a.name+". "+r.tip)+'">Save as an idea</button>'+
+      '<button class="btn small" data-act="flip">'+ic("redo")+'How to run it</button></div>'+
+    '</div>'+
+    '<div class="flash-face flash-back" inert>'+
+      '<div class="cardhead">'+kindTile(a)+'<div style="flex:1;min-width:0"><p class="muted small">How to run it</p><h3>'+esc(a.name)+'</h3></div></div>'+
+      ((a.steps||[]).length?'<ol class="steps">'+a.steps.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol>':'<p>'+(a.summary?esc(a.summary):"No steps written for this activity yet.")+'</p>')+
+      '<dl class="kv">'+(a.easier?'<dt>Make it easier</dt><dd>'+esc(a.easier)+'</dd>':"")+(a.stretch?'<dt>Stretch it</dt><dd>'+esc(a.stretch)+'</dd>':"")+(a.safety?'<dt>Safety</dt><dd>'+esc(a.safety)+'</dd>':"")+'</dl>'+
+      '<div class="row tight push"><button class="btn small" data-act="flip">'+ic("redo")+'Flip back</button>'+
+      (a.custom?"":'<button class="btn small quiet" data-act="open-lib" data-actid="'+a.id+'">See the research</button>')+'</div>'+
+    '</div></div></article>';
+}
+function ideaCard(i,n){
+  var src=i.act?act(i.act):null;
+  return '<article class="flash" style="--c:'+CARD_C[(n+3)%CARD_C.length]+'"><div class="flash-face">'+
+    '<div class="cardhead">'+tile("bulb","var(--c)")+'<p style="flex:1" class="ideatext">'+esc(i.text)+'</p></div>'+areaDots(i.areas)+
+    facts({prep:i.prep!=null?i.prep:(src?src.prep:null),mins:src?src.mins:null,materials:i.materials||(src?src.materials:"")})+
+    '<div class="row spread push"><span class="muted small">'+esc(nice(i.created,{day:"numeric",month:"short"}))+(i.example?" · Example":"")+'</span><span class="row tight">'+
+    (src?'<button class="btn small" data-act="new-plan" data-actid="'+i.act+'" data-note="'+esc(i.text)+'">Plan it</button>':'<button class="btn small" data-act="idea-to-act" data-id="'+i.id+'">Make it an activity</button>')+
+    '<button class="iconbtn sm ghost" data-act="del-idea" data-id="'+i.id+'" aria-label="Remove this idea">'+ic("trash")+'</button></span></div></div></article>';
+}
+function viewIdeas(){
+  var h=banner(), recs=recommend();
+  if(!ui.spark)ui.spark=makeSpark();
+  h+='<section class="hero"><div><p class="eyebrow">Ideas</p><h2 class="page">What to try next</h2></div>'+
+     '<select class="pill" id="age-filter" aria-label="Age group"><option value="">All ages</option>'+
+     Object.keys(AGES).map(function(k){return '<option value="'+k+'"'+(state.settings.age===k?" selected":"")+'>Ages '+AGES[k].toLowerCase()+'</option>';}).join("")+'</select></section>';
+  h+='<p class="muted">Each card comes from your own log: what absorbed the children, what fell flat, and which areas of learning you have covered least. The front shows why it is suggested and what you need. Flip a card for the steps.</p>';
+  h+='<div class="grid two">'+(recs.length?recs.map(recCard).join(""):empty("Log a few activities and suggestions will appear here."))+'</div>';
+  var sp=ui.spark;
+  h+='<section class="spark"><div class="cardhead">'+tile("sparkle","var(--berry)","lg")+'<h3>Spark a new idea</h3></div>'+
+     '<p class="big">'+esc(sp.text)+'</p>'+
+     '<p class="small muted">'+(sp.loved?"Starts from an activity your group was highly involved in and adds one of the areas you have covered least.":"Starts from a library activity. Log a few sessions and prompts will start from what your group enjoyed.")+' A prompt for your own thinking, not a research finding.</p>'+
+     '<div class="row tight"><button class="btn primary small" data-act="spark-save">Save to the idea board</button><button class="btn small" data-act="spark-next">'+ic("redo")+'Give me another</button></div></section>';
+  h+='<section class="stack"><h2>Idea board</h2>'+
+     '<div class="card"><div class="field"><label for="idea-text">Your own idea</label><textarea id="idea-text" placeholder="For example: turn the sand tray into a dinosaur dig with brushes and labels"></textarea></div>'+
+     '<div class="grid formrow"><div class="field"><label for="idea-mat">Materials you would need</label><input id="idea-mat" placeholder="Sand tray, brushes, toy dinosaurs, labels"></div>'+
+     '<div class="field"><label for="idea-prep">Prep time, in minutes</label><input id="idea-prep" type="number" min="0" max="240" inputmode="numeric" placeholder="10"></div></div>'+
+     '<fieldset><legend>Areas of learning it could touch</legend><div class="checks">'+AREAS.map(function(a){return '<input type="checkbox" id="idea-a-'+a.id+'" value="'+a.id+'"><label for="idea-a-'+a.id+'"><i style="background:var(--a-'+a.id+')"></i>'+esc(a.name)+'</label>';}).join("")+'</div></fieldset>'+
+     '<div><button class="btn primary small" data-act="add-idea">'+ic("plus")+'Add to the board</button></div></div>'+
+     (state.ideas.length?'<div class="grid two">'+state.ideas.slice().reverse().map(ideaCard).join("")+'</div>':empty("No ideas saved yet."))+'</section>';
+  return h;
+}
+function libCard(a){
+  var last=lastLogged(a.id), ev=a.ev;
+  return '<article class="card" id="act-'+a.id+'"><div class="cardhead">'+kindTile(a,"lg")+'<div style="flex:1;min-width:0"><h3>'+esc(a.name)+'</h3>'+
+    '<p class="muted small">'+esc(KINDS[a.kind]||"")+(ev?" · "+esc(ev.type):" · Your own")+'</p></div></div>'+
+    '<p>'+esc(a.summary||"")+'</p>'+areaChips(a.areas)+
+    '<p class="muted small">'+[a.ages?"Ages "+a.ages.map(function(x){return AGES[x].toLowerCase();}).join(", "):"",a.where?esc(a.where):"",a.prep!=null&&a.prep!==""?"prep "+a.prep+" min":"",a.mins?"activity about "+a.mins+" min":"",a.group?esc(a.group):""].filter(Boolean).join(" · ")+'</p>'+
+    '<details><summary>How to run it'+(ev?" and the research behind it":"")+'</summary><div class="stack">'+
+      ((a.steps||[]).length?'<ol class="steps">'+a.steps.map(function(s){return '<li>'+esc(s)+'</li>';}).join("")+'</ol>':"")+
+      '<dl class="kv">'+(a.materials?'<dt>You need</dt><dd>'+esc(a.materials)+'</dd>':"")+(a.easier?'<dt>Make it easier</dt><dd>'+esc(a.easier)+'</dd>':"")+(a.stretch?'<dt>Stretch it</dt><dd>'+esc(a.stretch)+'</dd>':"")+(a.safety?'<dt>Safety</dt><dd>'+esc(a.safety)+'</dd>':"")+'</dl>'+
+      (ev?'<p class="why">'+ic("book")+'<span><strong>What the research says.</strong> '+esc(ev.finding)+'<br><span class="small">'+esc(ev.cite)+'. <a href="'+esc(ev.url)+'" target="_blank" rel="noopener">Open the source</a></span></span></p>':(a.source?'<p class="why">'+ic("book")+'<span>'+esc(a.source)+'</span></p>':""))+
+    '</div></details>'+
+    '<div class="row spread"><span class="muted small">'+(last?"Last logged "+esc(nice(last,{day:"numeric",month:"short"})):"Not logged yet")+'</span><span class="row tight">'+
+    '<button class="btn small" data-act="new-plan" data-actid="'+a.id+'">Plan it</button><button class="btn small primary" data-act="new-log" data-actid="'+a.id+'">Log it</button>'+
+    (a.custom?'<button class="iconbtn sm ghost" data-act="del-act" data-id="'+a.id+'" aria-label="Delete this activity">'+ic("trash")+'</button>':"")+'</span></div></article>';
+}
+function pick(actName,v,cur,label,dot){return '<button class="chip'+(dot?"":" plain")+'" data-act="'+actName+'" data-v="'+v+'" aria-pressed="'+(cur===v?"true":"false")+'">'+(dot||"")+esc(label)+'</button>';}
+function viewLibrary(){
+  var q=ui.libQ.toLowerCase();
+  var list=allActs().filter(function(a){
+    return (!ui.libArea||a.areas.indexOf(ui.libArea)>=0)&&matchesAge(a,ui.libAge)&&(!ui.libKind||a.kind===ui.libKind)&&
+      (!q||(a.name+" "+(a.summary||"")).toLowerCase().indexOf(q)>=0);});
+  var h='<section class="hero"><div><p class="eyebrow">Activity library</p><h2 class="page">Things to try</h2></div><button class="btn primary" data-act="new-act">'+ic("plus")+'Add your own</button></section>'+
+    '<p class="muted">'+LIBRARY.length+' starter activities, each tied to a published source. Every card names the kind of evidence behind it, because a randomised trial and a design theory do not carry the same weight.</p>'+
+    '<div class="row"><div class="search">'+ic("search")+'<input id="lib-q" type="search" value="'+esc(ui.libQ)+'" placeholder="Search activities" aria-label="Search activities"></div>'+
+    '<select class="pill" id="lib-age" aria-label="Age group"><option value="">All ages</option>'+Object.keys(AGES).map(function(k){return '<option value="'+k+'"'+(ui.libAge===k?" selected":"")+'>Ages '+AGES[k].toLowerCase()+'</option>';}).join("")+'</select></div>'+
+    '<div class="scrollx" role="group" aria-label="Area of learning">'+pick("lib-area","",ui.libArea,"All areas")+AREAS.map(function(a){return pick("lib-area",a.id,ui.libArea,a.name,'<span class="dot" style="--c:var(--a-'+a.id+')">'+ic(AREA_IC[a.id])+'</span>');}).join("")+'</div>'+
+    '<div class="scrollx" role="group" aria-label="Kind of play">'+pick("lib-kind","",ui.libKind,"All kinds of play")+Object.keys(KINDS).filter(function(k){return k!=="other";}).map(function(k){return pick("lib-kind",k,ui.libKind,KINDS[k],'<span class="dot" style="--c:'+KIND_C[k]+'">'+ic(KIND_IC[k])+'</span>');}).join("")+'</div>'+
+    '<div class="grid two" id="lib-list">'+(list.length?list.map(libCard).join(""):empty("No activities match these filters."))+'</div>';
+  return h;
+}
+function bars(rows,max,fmt){
+  return '<div class="bars">'+rows.map(function(r){
+    return '<div class="barrow" title="'+esc(r.title||"")+'"><span class="lab">'+r.label+'</span><span class="val">'+fmt(r)+'</span><span class="track"><span class="fill" style="width:'+Math.max(0,Math.min(100,r.value/max*100))+'%;'+(r.color?"background:"+r.color:"")+'"></span></span></div>';
+  }).join("")+'</div>';
+}
+function viewInsights(){
+  var s=stats(ui.period), logs=s.logs, h=banner();
+  h+='<section class="hero"><div><p class="eyebrow">Patterns</p><h2 class="page">How it is going</h2></div>'+
+     '<div class="row tight" role="group" aria-label="Period">'+[14,30,90].map(function(n){return '<button class="chip plain" data-act="period" data-v="'+n+'" aria-pressed="'+(ui.period===n?"true":"false")+'">'+n+' days</button>';}).join("")+'</div></section>';
+  var covered=AREAS.filter(function(a){return s.areaCount[a.id]>0;}).length;
+  h+='<div class="stats">'+
+    stat("check","var(--leaf)",logs.length,"sessions logged")+
+    stat("star","var(--sun)",logs.length?fix1(avg(logs.map(function(l){return l.inv;}))):"–","average involvement, out of 5")+
+    stat("heart","var(--berry)",logs.length?fix1(avg(logs.map(function(l){return l.wb;}))):"–","average wellbeing, out of 5")+
+    stat("shapes","var(--grape)",covered+" of 7","areas of learning covered")+'</div>';
+  if(!logs.length){h+=empty("No sessions logged in this period yet.");}
+  else{
+    var maxA=Math.max.apply(null,AREAS.map(function(a){return s.areaCount[a.id];}))||1;
+    h+='<div class="grid two"><section class="card"><h3>Sessions touching each area of learning</h3>'+
+      bars(AREAS.map(function(a){return {label:'<span class="dot-wrap chip" style="--c:var(--a-'+a.id+');background:transparent;padding:0"><span class="dot">'+ic(AREA_IC[a.id])+'</span></span>'+esc(a.name),value:s.areaCount[a.id],color:"var(--a-"+a.id+")",title:a.name+": "+s.areaCount[a.id]+" sessions"};}),maxA,function(r){return r.value;})+
+      '<p class="muted small">An activity counts once for every area it touches. The first three listed are the prime areas.</p></section>';
+    var kinds=Object.keys(s.byKind).map(function(k){return {k:k,avg:avg(s.byKind[k].inv),n:s.byKind[k].inv.length};}).sort(function(a,b){return b.avg-a.avg;});
+    h+='<section class="card"><h3>Average involvement by kind of play</h3>'+
+      bars(kinds.map(function(k){return {label:tile(KIND_IC[k.k]||"star",KIND_C[k.k]||"var(--muted)")+esc(KINDS[k.k]),value:k.avg,n:k.n,color:KIND_C[k.k],title:KINDS[k.k]+": "+fix1(k.avg)+" across "+k.n+" sessions"};}),5,function(r){return fix1(r.value)+' <span class="muted small" style="font-weight:400">('+r.n+')</span>';})+
+      '<p class="muted small">Scale 0 to 5. The number in brackets is how many sessions the average rests on. One or two sessions is a hint, not a pattern.</p></section></div>';
+    var acts=Object.keys(s.byAct).map(function(k){var x=s.byAct[k];return {id:k,n:x.n,inv:avg(x.inv),wb:avg(x.wb),last:x.last};}).sort(function(a,b){return b.inv-a.inv;});
+    h+='<section class="card"><h3>Activity by activity</h3><div class="scroll"><table><thead><tr><th>Activity</th><th>Sessions</th><th>Involvement</th><th>Wellbeing</th><th>Last logged</th></tr></thead><tbody>'+
+      acts.map(function(a){return '<tr><td>'+esc(actName(a.id))+'</td><td class="num">'+a.n+'</td><td class="num">'+stars(a.inv)+' '+fix1(a.inv)+'</td><td class="num"><span class="score">'+face(a.wb)+fix1(a.wb)+'</span></td><td class="num">'+esc(nice(a.last,{day:"numeric",month:"short"}))+'</td></tr>';}).join("")+'</tbody></table></div></section>';
+    var tg=TAGS.filter(function(t){return s.tagCount[t.id];}).sort(function(a,b){return s.tagCount[b.id]-s.tagCount[a.id];});
+    if(tg.length)h+='<section class="card"><h3>What you noticed most often</h3><div class="chips">'+tg.map(function(t){return '<span class="chip plain'+(t.hard?" hard":"")+'">'+esc(t.label)+' · <strong>'+s.tagCount[t.id]+'</strong></span>';}).join("")+'</div></section>';
+  }
+  h+='<section class="card"><h3>How the two scores work</h3>'+
+    '<p>Involvement and wellbeing use the five-point Leuven scales, developed by Ferre Laevers and his team at Leuven University. Watch the group, or one child, for about two minutes and then give a score. The idea behind the scales is that children who feel at ease and are deeply involved are the ones learning most.</p>'+
+    '<div class="scroll"><table><thead><tr><th>Score</th><th>Involvement</th><th>Wellbeing</th></tr></thead><tbody>'+[1,2,3,4,5].map(function(n){return '<tr><td class="num"><strong>'+n+'</strong> '+LEVEL[n]+'</td><td>'+stars(n)+'<br>'+INV_HINT[n]+'</td><td><span class="score">'+face(n)+WB_HINT[n]+'</span></td></tr>';}).join("")+'</tbody></table></div>'+
+    '<p class="small muted">The one-line descriptions are a short summary for quick logging. For the full descriptors, see <a href="https://www.oxfordshire.gov.uk/sites/default/files/file/early-years-childcare-working-early-years/ferrelaevers-wellbeing.docx" target="_blank" rel="noopener">Oxfordshire County Council’s summary of the Laevers scales</a>.</p></section>';
+  h+='<section class="card"><h3>What the wider evidence says</h3>'+
+    '<p>The Education Endowment Foundation’s Early Years Toolkit summarises international research as additional months of progress, on average, alongside how secure that evidence is. Read the two together: a large figure on very limited evidence is a promising lead, not a settled fact.</p>'+
+    bars(EEF.map(function(r){return {label:esc(r[0])+' <span class="chip plain">'+r[2]+' evidence</span>',value:r[1],title:r[0]+": +"+r[1]+" months, "+r[2].toLowerCase()+" evidence"};}),7,function(r){return "+"+r.value+" months";})+
+    '<p class="small muted">Source: <a href="https://educationendowmentfoundation.org.uk/print/ey-toolkit" target="_blank" rel="noopener">EEF Early Years Toolkit</a>, figures as retrieved in November 2026. The areas of learning used throughout this journal are the seven in England’s <a href="https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2" target="_blank" rel="noopener">EYFS statutory framework</a>.</p></section>';
+  return h;
+}
+
+var ROUTES={today:viewToday,plan:viewPlan,ideas:viewIdeas,library:viewLibrary,insights:viewInsights};
+function route(){var r=(location.hash||"").replace("#","");return ROUTES[r]?r:"today";}
+var lastRoute=null;
+function render(){
+  var r=route();
+  $("side-nav").innerHTML=navHtml(r,false);
+  $("tabbar").innerHTML=navHtml(r,true);
+  $("view").innerHTML=ROUTES[r]();
+  if(lastRoute!==null&&lastRoute!==r)window.scrollTo(0,0);
+  lastRoute=r;
+}
+function initChrome(){
+  var m=document.querySelectorAll("[data-mascot]"),i;
+  for(i=0;i<m.length;i++)m[i].outerHTML=mascot();
+  var k=document.querySelectorAll("[data-ic]");
+  for(i=0;i<k.length;i++)k[i].outerHTML=ic(k[i].getAttribute("data-ic"));
+  if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+    try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}
+  }
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+}
+function showBackup(){
+  $("form-backup").innerHTML='<h2>Back up or restore</h2>'+
+    '<p>Your entries live on this device only. Save a backup file now and then, and use it to move the journal to another device.</p>'+
+    '<div class="row"><button type="button" class="btn primary" data-act="bk-save">'+ic("share")+'Save a backup file</button><button type="button" class="btn" data-act="bk-copy">Copy the backup as text</button></div>'+
+    '<p class="small muted" id="bk-msg">'+(state.lastBackup?"Last backup: "+esc(nice(state.lastBackup))+".":"No backup saved yet.")+'</p>'+
+    '<details><summary>Show the backup text</summary><textarea class="backup" id="bk-text" readonly aria-label="Backup text">'+esc(JSON.stringify(state))+'</textarea></details>'+
+    '<h3>Restore</h3><p class="small muted">Restoring replaces everything on this device with the contents of the backup.</p>'+
+    '<div class="field"><label for="bk-file">Choose a backup file</label><input type="file" id="bk-file" accept=".json,application/json"></div>'+
+    '<div class="field"><label for="bk-paste">Or paste backup text</label><textarea class="backup" id="bk-paste"></textarea></div>'+
+    '<div class="row"><button type="button" class="btn" data-act="bk-restore">Restore from the pasted text</button><button class="btn quiet" value="cancel">Close</button></div>';
+  openDlg("dlg-backup");
+}
+function saveBackupFile(){
+  var name="nursery-journal-backup-"+today()+".json", text=JSON.stringify(state,null,1), m=$("bk-msg");
+  function done(msg){state.lastBackup=today();save();if(m)m.textContent=msg;}
+  function download(){
+    try{var blob=new Blob([text],{type:"application/json"}),u=URL.createObjectURL(blob),l=document.createElement("a");
+      l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(function(){URL.revokeObjectURL(u);},2000);
+      done("Backup file created. If no file appeared, copy the backup as text and keep it in a note.");
+    }catch(x){if(m)m.textContent="Saving a file is not available here. Copy the backup as text.";}
+  }
+  try{
+    var file=new File([text],name,{type:"application/json"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:"Nursery journal backup"}).then(function(){done("Backup saved.");},function(e){if(!e||e.name!=="AbortError")download();});
+      return;
+    }
+  }catch(e){}
+  download();
+}
+
+/* ---------- Dialogs ---------- */
+function $(id){return document.getElementById(id);}
+function openDlg(id){var d=$(id);if(d.showModal){try{d.showModal();}catch(e){d.setAttribute("open","");}}else d.setAttribute("open","");}
+function closeDlg(id){var d=$(id);if(d.close)d.close();else d.removeAttribute("open");}
+function actOptions(sel){
+  var groups={};allActs().forEach(function(a){(groups[a.kind]=groups[a.kind]||[]).push(a);});
+  return Object.keys(KINDS).filter(function(k){return groups[k];}).map(function(k){
+    return '<optgroup label="'+KINDS[k]+'">'+groups[k].map(function(a){return '<option value="'+a.id+'"'+(a.id===sel?" selected":"")+'>'+esc(a.name)+'</option>';}).join("")+'</optgroup>';}).join("");
+}
+var editing=null;
+function showLog(opts){
+  opts=opts||{};
+  var l=opts.log||{date:ui.day,act:opts.actid||"",inv:3,wb:4,tags:[],notes:"",next:"",group:"",count:""};
+  editing={log:opts.log||null,planId:opts.planId||null};
+  $("form-log").innerHTML='<h2>'+(opts.log?"Edit this entry":"Log an activity")+'</h2>'+
+    '<div class="grid two"><div class="field"><label for="log-act">Activity</label><select id="log-act">'+actOptions(l.act)+'<option value="__new">Something not in the library…</option></select></div>'+
+    '<div class="field"><label for="log-date">Date</label><input type="date" id="log-date" value="'+l.date+'" required></div></div>'+
+    '<div id="log-new" class="stack" hidden><div class="grid two"><div class="field"><label for="log-newname">What did you do?</label><input id="log-newname" placeholder="Name of the activity"></div>'+
+    '<div class="field"><label for="log-newkind">Kind of play</label><select id="log-newkind">'+Object.keys(KINDS).map(function(k){return '<option value="'+k+'">'+KINDS[k]+'</option>';}).join("")+'</select></div></div>'+
+    '<fieldset><legend>Areas of learning</legend><div class="checks">'+AREAS.map(function(a){return '<input type="checkbox" id="log-na-'+a.id+'" value="'+a.id+'"><label for="log-na-'+a.id+'"><i style="background:var(--a-'+a.id+')"></i>'+esc(a.name)+'</label>';}).join("")+'</div></fieldset></div>'+
+    '<div class="grid two"><div class="field"><label for="log-group">Group (initials or a group name, not full names)</label><input id="log-group" value="'+esc(l.group)+'" placeholder="Butterflies, or A., M. and S."></div>'+
+    '<div class="field"><label for="log-count">Number of children</label><input id="log-count" type="number" min="1" max="60" value="'+esc(l.count)+'"></div></div>'+
+    '<fieldset><legend>Involvement: how absorbed were they? Watch for about two minutes, then tap a star.</legend>'+starInput("log-inv",l.inv)+'</fieldset>'+
+    '<fieldset><legend>Wellbeing: how at ease were they?</legend>'+faceInput("log-wb",l.wb)+'</fieldset>'+
+    '<fieldset><legend>What did you notice?</legend><div class="checks">'+TAGS.map(function(t){return '<input type="checkbox" id="log-t-'+t.id+'" value="'+t.id+'"'+((l.tags||[]).indexOf(t.id)>=0?" checked":"")+'><label for="log-t-'+t.id+'">'+esc(t.label)+'</label>';}).join("")+'</div></fieldset>'+
+    '<div class="field"><label for="log-notes">What happened? What did the children say or do?</label><textarea id="log-notes">'+esc(l.notes)+'</textarea></div>'+
+    '<div class="field"><label for="log-next">What would you try next time?</label><input id="log-next" value="'+esc(l.next)+'"></div>'+
+    '<p class="small" id="log-err" style="color:var(--low)" hidden></p>'+
+    '<div class="row"><button class="btn primary big" value="save" id="log-save">Save the entry</button><button class="btn quiet" value="cancel" formnovalidate>Cancel</button></div>';
+  openDlg("dlg-log");
+}
+function saveLog(){
+  var actId=$("log-act").value, err=$("log-err");
+  if(actId==="__new"){
+    var name=$("log-newname").value.trim(), ar=checked("log-na-");
+    if(!name||!ar.length){err.textContent="Give the activity a name and choose at least one area of learning.";err.hidden=false;return false;}
+    var c={id:uid("c"),custom:true,name:name,kind:$("log-newkind").value,areas:ar,summary:""};state.custom.push(c);actId=c.id;
+  }
+  var inv=radio("log-inv"), wb=radio("log-wb");
+  var data={date:$("log-date").value||ui.day,act:actId,inv:inv,wb:wb,tags:checked("log-t-"),notes:$("log-notes").value.trim(),next:$("log-next").value.trim(),group:$("log-group").value.trim(),count:+$("log-count").value||""};
+  if(editing.log){Object.keys(data).forEach(function(k){editing.log[k]=data[k];});}
+  else{data.id=uid("l");state.logs.push(data);
+    if(editing.planId){state.plans.forEach(function(p){if(p.id===editing.planId)p.logId=data.id;});}
+    else{var m=state.plans.filter(function(p){return p.date===data.date&&p.act===data.act&&!p.logId;})[0];if(m)m.logId=data.id;}
+  }
+  ui.day=data.date;save();return true;
+}
+function num(id){var v=$(id).value;return v===""?null:Math.max(0,+v||0);}
+function checked(prefix){var o=[],els=document.querySelectorAll('input[id^="'+prefix+'"]:checked');for(var i=0;i<els.length;i++)o.push(els[i].value);return o;}
+function radio(name){var e=document.querySelector('input[name="'+name+'"]:checked');return e?+e.value:3;}
+function showPlan(opts){
+  opts=opts||{};
+  var d=opts.date||(function(){var t=today(),w=parse(t).getDay();return (w===0||w===6)?workday(1):t;})();
+  $("form-plan").innerHTML='<h2>Add to the plan</h2>'+
+    '<div class="grid two"><div class="field"><label for="plan-act">Activity</label><select id="plan-act">'+actOptions(opts.actid||"")+'</select></div>'+
+    '<div class="field"><label for="plan-date">Day</label><input type="date" id="plan-date" value="'+d+'" required></div></div>'+
+    '<div class="field"><label for="plan-note">Note to yourself</label><input id="plan-note" value="'+esc(opts.note||"")+'" placeholder="Resources to prepare, who to watch, what to try"></div>'+
+    '<div class="row"><button class="btn primary" value="save">Add to the plan</button><button class="btn quiet" value="cancel" formnovalidate>Cancel</button></div>';
+  openDlg("dlg-plan");
+}
+var actFromIdea=null;
+function showAct(prefill){
+  prefill=prefill||{};actFromIdea=prefill.ideaId||null;
+  $("form-act").innerHTML='<h2>Add your own activity</h2>'+
+    '<div class="grid two"><div class="field"><label for="act-name">Name</label><input id="act-name" value="'+esc(prefill.name||"")+'" required></div>'+
+    '<div class="field"><label for="act-kind">Kind of play</label><select id="act-kind">'+Object.keys(KINDS).map(function(k){return '<option value="'+k+'">'+KINDS[k]+'</option>';}).join("")+'</select></div></div>'+
+    '<fieldset><legend>Areas of learning</legend><div class="checks">'+AREAS.map(function(a){return '<input type="checkbox" id="act-a-'+a.id+'" value="'+a.id+'"'+((prefill.areas||[]).indexOf(a.id)>=0?" checked":"")+'><label for="act-a-'+a.id+'"><i style="background:var(--a-'+a.id+')"></i>'+esc(a.name)+'</label>';}).join("")+'</div></fieldset>'+
+    '<div class="field"><label for="act-sum">In one or two sentences, what is it?</label><textarea id="act-sum">'+esc(prefill.summary||"")+'</textarea></div>'+
+    '<div class="field"><label for="act-steps">How to run it (one step per line)</label><textarea id="act-steps"></textarea></div>'+
+    '<div class="field"><label for="act-mat">What you need</label><input id="act-mat" value="'+esc(prefill.materials||"")+'"></div>'+
+    '<div class="grid two"><div class="field"><label for="act-prep">Prep time, in minutes</label><input id="act-prep" type="number" min="0" max="240" inputmode="numeric" value="'+esc(prefill.prep!=null?prefill.prep:"")+'"></div>'+
+    '<div class="field"><label for="act-mins">Activity time, in minutes</label><input id="act-mins" type="number" min="0" max="240" inputmode="numeric"></div></div>'+
+    '<div class="field"><label for="act-src">Where the idea came from (a book, a paper, a colleague)</label><input id="act-src"></div>'+
+    '<p class="small" id="act-err" style="color:var(--low)" hidden></p>'+
+    '<div class="row"><button class="btn primary" value="save">Save the activity</button><button class="btn quiet" value="cancel" formnovalidate>Cancel</button></div>';
+  openDlg("dlg-act");
+}
+function restore(text){
+  var msg=$("bk-msg");
+  try{var s=JSON.parse(text);if(!s||!Array.isArray(s.logs))throw new Error("shape");state=normalise(s);save();closeDlg("dlg-backup");render();}
+  catch(e){if(msg)msg.textContent="That is not a journal backup. Check that you chose the right file.";}
+}
+var pendingConfirm=null;
+function ask(text,label,fn){
+  pendingConfirm=fn;
+  $("form-confirm").innerHTML='<h2>Are you sure?</h2><p>'+esc(text)+'</p><div class="row"><button class="btn primary" value="yes">'+esc(label)+'</button><button class="btn quiet" value="cancel">Keep it</button></div>';
+  openDlg("dlg-confirm");
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]");if(!b)return;
+  var a=b.getAttribute("data-act"), id=b.getAttribute("data-id"), actid=b.getAttribute("data-actid");
+  if(a==="backup")showBackup();
+  else if(a==="flip"){var fl=b.closest(".flash"),on=fl.classList.toggle("flipped"),fr=fl.querySelector(".flash-front"),bk=fl.querySelector(".flash-back");
+    fr.inert=on;bk.inert=!on;var nb=(on?bk:fr).querySelector('[data-act="flip"]');if(nb)nb.focus({preventScroll:true});}
+  else if(a==="hide-install"){state.settings.hideInstall=true;save();render();}
+  else if(a==="lib-area"){ui.libArea=b.getAttribute("data-v");render();}
+  else if(a==="lib-kind"){ui.libKind=b.getAttribute("data-v");render();}
+  else if(a==="period"){ui.period=+b.getAttribute("data-v");render();}
+  else if(a==="bk-save")saveBackupFile();
+  else if(a==="clear-examples")ask("This removes every example entry, plan and idea. Anything you added yourself stays.","Clear the examples",function(){
+    state.logs=state.logs.filter(function(x){return !x.example;});state.plans=state.plans.filter(function(x){return !x.example;});state.ideas=state.ideas.filter(function(x){return !x.example;});state.hasExamples=false;ui.spark=null;save();render();});
+  else if(a==="day"){ui.day=addDays(ui.day,+b.getAttribute("data-n"));render();}
+  else if(a==="day-today"){ui.day=today();render();}
+  else if(a==="week"){ui.week=addDays(ui.week,+b.getAttribute("data-n"));render();}
+  else if(a==="week-now"){ui.week=monday(today());render();}
+  else if(a==="new-log")showLog({actid:actid});
+  else if(a==="edit-log")showLog({log:state.logs.filter(function(l){return l.id===id;})[0]});
+  else if(a==="del-log")ask("This deletes the entry for good.","Delete the entry",function(){state.logs=state.logs.filter(function(l){return l.id!==id;});state.plans.forEach(function(p){if(p.logId===id)delete p.logId;});save();render();});
+  else if(a==="log-plan"){var p=state.plans.filter(function(x){return x.id===id;})[0];if(p){ui.day=p.date;showLog({actid:p.act,planId:p.id});}}
+  else if(a==="new-plan")showPlan({actid:actid,date:b.getAttribute("data-date"),note:b.getAttribute("data-note")});
+  else if(a==="del-plan"){state.plans=state.plans.filter(function(x){return x.id!==id;});save();render();}
+  else if(a==="save-idea"){var A=act(actid);state.ideas.push({id:uid("i"),text:b.getAttribute("data-text"),areas:A?A.areas:[],act:actid,created:today()});save();render();toast("Saved to the idea board");}
+  else if(a==="open-lib"){ui.libArea="";ui.libAge="";ui.libKind="";ui.libQ="";location.hash="#library";setTimeout(function(){var el=$("act-"+actid);if(el){var d=el.querySelector("details");if(d)d.open=true;el.scrollIntoView({block:"center"});}},60);}
+  else if(a==="spark-next"){ui.spark=makeSpark();render();}
+  else if(a==="spark-save"){var sp=ui.spark;state.ideas.push({id:uid("i"),text:sp.text,areas:[sp.area].concat(act(sp.act).areas).filter(function(v,i,arr){return arr.indexOf(v)===i;}),act:sp.act,created:today()});ui.spark=makeSpark();save();render();toast("Saved to the idea board");}
+  else if(a==="add-idea"){var t=$("idea-text").value.trim();if(!t){$("idea-text").focus();return;}state.ideas.push({id:uid("i"),text:t,areas:checked("idea-a-"),materials:$("idea-mat").value.trim(),prep:num("idea-prep"),created:today()});save();render();toast("Added to the board");}
+  else if(a==="del-idea"){state.ideas=state.ideas.filter(function(x){return x.id!==id;});save();render();}
+  else if(a==="idea-to-act"){var I=state.ideas.filter(function(x){return x.id===id;})[0];if(I)showAct({ideaId:I.id,summary:I.text,areas:I.areas,materials:I.materials,prep:I.prep});}
+  else if(a==="new-act")showAct();
+  else if(a==="del-act")ask("This removes your activity from the library. Entries you logged for it stay in the journal but will show as a removed activity.","Delete the activity",function(){state.custom=state.custom.filter(function(x){return x.id!==id;});save();render();});
+  else if(a==="bk-copy"){var m=$("bk-msg"),txt=JSON.stringify(state);
+    var sel=function(){var d=$("bk-text");d.closest("details").open=true;d.focus();d.select();m.textContent="Copying was blocked. The text is selected: press Cmd or Ctrl and C.";};
+    try{navigator.clipboard.writeText(txt).then(function(){state.lastBackup=today();save();m.textContent="Copied. Paste it into a note to keep it.";},sel);}catch(x){sel();}}
+  else if(a==="bk-restore")restore($("bk-paste").value);
+});
+document.addEventListener("change",function(e){
+  var t=e.target;
+  if(t.id==="day-input"&&t.value){ui.day=t.value;render();}
+  else if(t.id==="age-filter"){state.settings.age=t.value;save();render();}
+  else if(t.id==="lib-area"){ui.libArea=t.value;render();}
+  else if(t.id==="lib-age"){ui.libAge=t.value;render();}
+  else if(t.id==="lib-kind"){ui.libKind=t.value;render();}
+  else if(t.id==="period"){ui.period=+t.value;render();}
+  else if(t.id==="log-act"){$("log-new").hidden=t.value!=="__new";}
+  else if(t.name==="log-inv"){var v=+t.value;for(var i=1;i<=5;i++){var lb=document.querySelector('label[for="log-inv-'+i+'"]');if(lb)lb.className=i<=v?"on":"";}
+    $("log-inv-hint").textContent=LEVEL[v]+": "+INV_HINT[v].toLowerCase();}
+  else if(t.id==="bk-file"&&t.files&&t.files[0]){var r=new FileReader();r.onload=function(){restore(String(r.result));};r.readAsText(t.files[0]);}
+});
+document.addEventListener("input",function(e){
+  if(e.target.id==="lib-q"){ui.libQ=e.target.value;
+    var q=ui.libQ.toLowerCase(),list=allActs().filter(function(a){return (!ui.libArea||a.areas.indexOf(ui.libArea)>=0)&&matchesAge(a,ui.libAge)&&(!ui.libKind||a.kind===ui.libKind)&&(!q||(a.name+" "+(a.summary||"")).toLowerCase().indexOf(q)>=0);});
+    $("lib-list").innerHTML=list.length?list.map(libCard).join(""):'<div class="card flat"><p class="muted">No activities match these filters.</p></div>';}
+});
+function submitter(e){return (e.submitter&&e.submitter.value)||"cancel";}
+$("form-log").addEventListener("submit",function(e){if(submitter(e)==="save"){if(!saveLog()){e.preventDefault();return;}if(route()!=="today"&&route()!=="plan")location.hash="#today";render();toast("Entry saved");}});
+$("form-plan").addEventListener("submit",function(e){if(submitter(e)==="save"){var d=$("plan-date").value||today();state.plans.push({id:uid("p"),date:d,act:$("plan-act").value,note:$("plan-note").value.trim()});ui.week=monday(d);save();if(route()!=="plan")location.hash="#plan";render();toast("Added to the plan");}});
+$("form-act").addEventListener("submit",function(e){if(submitter(e)==="save"){
+  var ar=checked("act-a-"),name=$("act-name").value.trim();
+  if(!name||!ar.length){e.preventDefault();var er=$("act-err");er.textContent="Give the activity a name and choose at least one area of learning.";er.hidden=false;return;}
+  var c={id:uid("c"),custom:true,name:name,kind:$("act-kind").value,areas:ar,summary:$("act-sum").value.trim(),steps:$("act-steps").value.split("\n").map(function(s){return s.trim();}).filter(Boolean),materials:$("act-mat").value.trim(),prep:num("act-prep"),mins:num("act-mins"),source:$("act-src").value.trim()};
+  state.custom.push(c);if(actFromIdea)state.ideas.forEach(function(i){if(i.id===actFromIdea)i.act=c.id;});
+  save();render();toast("Activity added to the library");}});
+$("form-confirm").addEventListener("submit",function(e){if(submitter(e)==="yes"&&pendingConfirm)pendingConfirm();pendingConfirm=null;});
+window.addEventListener("hashchange",render);
+
+load();
+initChrome();
+render();
+</script>
+</body>
+</html>
