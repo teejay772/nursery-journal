@@ -28,7 +28,7 @@ All six files must sit together in the same folder.
   flat, which areas are thin). The front shows the reason, materials, prep time, activity
   time and group size; flip the card for the steps. Plus an idea board for your own ideas.
   Prep times on the starter activities are estimates.
-- **Activity library**: 17 starter activities as flip cards. The front shows materials,
+- **Activity library**: 29 starter activities as flip cards, 12 of them for under-twos. The front shows materials,
   prep time, group size and ages; the back shows the steps and the research. Each is tied
   to a published source and labelled with the kind of evidence behind it. Add your own.
 - **Patterns**: flip-card insights (most absorbing activity, least covered area, and what
@@ -94,5 +94,43 @@ replace the three icon PNG files, or send SVG files to swap into `index.html`.
 - Domitrovich, Cortes and Greenberg (2007), Journal of Primary Prevention, 28, 67-91.
 - Nicholson (1971), How NOT to Cheat Children: The Theory of Loose Parts.
 - Goldschmied and Jackson (1994), People Under Three.
+
+Added in November 2026 for the under-twos activities (journal details checked against
+PubMed or the publisher's record):
+
+- Ferjan Ramírez, Lytle and Kuhl (2020), Proceedings of the National Academy of Sciences,
+  117(7), 3484-3491. DOI 10.1073/pnas.1921653117.
+  https://pubmed.ncbi.nlm.nih.gov/32015127/
+- Colonnesi, Stams, Koster and Noom (2010), Developmental Review, 30(4), 352-366.
+  DOI 10.1016/j.dr.2010.10.001. Summary: https://eric.ed.gov/?id=EJ919441
+- Vally, Murray, Tomlinson and Cooper (2015), Journal of Child Psychology and Psychiatry,
+  56(8), 865-873. DOI 10.1111/jcpp.12352.
+  https://pubmed.ncbi.nlm.nih.gov/25399699/
+- Department for Education, Development Matters: non-statutory curriculum guidance for the
+  early years foundation stage (updated 2023).
+  https://www.gov.uk/government/publications/development-matters--2
+- Hewitt, Kerr, Stanley and Okely (2020), Pediatrics, 145(6), e20192168.
+  DOI 10.1542/peds.2019-2168. https://pubmed.ncbi.nlm.nih.gov/32371428/
+- World Health Organization (2019), Guidelines on physical activity, sedentary behaviour
+  and sleep for children under 5 years of age.
+  https://www.who.int/publications/i/item/9789241550536
+- Center on the Developing Child at Harvard University (2014), Executive Function
+  Activities for 6- to 18-month-olds (part of the guide listed above).
+- Dahl, Satlof-Bedrick, Hammond, Drummond, Waugh and Brownell (2017), Developmental
+  Psychology, 53(3), 407-416. DOI 10.1037/dev0000244.
+  https://pubmed.ncbi.nlm.nih.gov/27854464/
+- Pruden, Levine and Huttenlocher (2011), Developmental Science, 14(6), 1417-1430.
+  DOI 10.1111/j.1467-7687.2011.01088.x. https://pubmed.ncbi.nlm.nih.gov/22010900/
+- Levine, Suriyakham, Rowe, Huttenlocher and Gunderson (2010), Developmental Psychology,
+  46(5), 1309-1319. DOI 10.1037/a0019671. https://pubmed.ncbi.nlm.nih.gov/20822240/
+- Gerry, Unrau and Trainor (2012), Developmental Science, 15(3), 398-407.
+  DOI 10.1111/j.1467-7687.2012.01142.x. https://pubmed.ncbi.nlm.nih.gov/22490179/
+- Quinn, Donnelly and Kidd (2018), Developmental Review, 49, 121-135.
+  DOI 10.1016/j.dr.2018.05.005. Summary:
+  https://researchportalplus.anu.edu.au/en/publications/the-relationship-between-symbolic-play-and-language-acquisition-a/
+
+Most of the under-twos studies were done with parents at home, not staff in a nursery,
+and several show a link between two things, not proof that one causes the other. Each
+card says which.
 
 Links to each source are on the activity cards in the library.
